@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Meson Build",
+            "type": "shell",
+            "command": "meson",
+            "args": [
+                "compile",
+                "-C",
+                "builddir"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

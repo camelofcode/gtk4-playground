@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug GTK App",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/builddir/gtk-text-example",
+            "cwd": "${workspaceFolder}",
+            "args": [],
+            "stopOnEntry": false,
+            "terminal": "integrated",
+            "preLaunchTask": "Meson Build"
+        }
+    ]
+}

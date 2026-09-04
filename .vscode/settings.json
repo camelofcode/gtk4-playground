@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.ui": "xml"
+    },
+
+    "xml.fileAssociations": [
+        {
+            "pattern": "**/*.ui",
+            "systemId": "/usr/share/gtk-4.0/gtk4builder.rng"
+        }
+    ]
+}
