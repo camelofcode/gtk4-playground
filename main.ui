@@ -2,8 +2,8 @@
 <!-- Created with Cambalache 1.0.3 -->
 <interface>
   <!-- interface-name main.ui -->
-  <requires lib="gtk" version="4.0"/>
-    <object class="GtkWindow" id="main_window">
+  <requires lib="gtk" version="4.0" />
+  <object class="GtkWindow" id="main_window">
     <property name="default-height">300</property>
     <property name="default-width">300</property>
     <property name="title">GTK Playground</property>
@@ -18,7 +18,7 @@
         <child>
           <object class="GtkButton" id="open_text_binding_window_button">
             <property name="label">Text Binding</property>
-            <signal 
+            <signal
               name="clicked"
               handler="on_open_text_binding_window_button_clicked"
               object="text_binding_window"
@@ -29,7 +29,7 @@
         <child>
           <object class="GtkButton" id="open_task_list_window_button">
             <property name="label">Task List</property>
-            <signal 
+            <signal
               name="clicked"
               handler="on_open_task_list_window_button_clicked"
               object="task_list_window"
@@ -60,16 +60,17 @@
         </child>
         <child>
           <object class="GtkLabel" id="text_binding_label">
-            <property name="label" bind-source="text_binding_input" bind-property="text" bind-flags="sync-create"/>
+            <property name="label" bind-source="text_binding_input" bind-property="text"
+              bind-flags="sync-create" />
           </object>
         </child>
         <child>
           <object class="GtkButton" id="text_binding_button">
             <property name="label">Reset</property>
-            <signal 
-              name="clicked" 
-              handler="on_text_binding_reset_clicked" 
-              swapped="False" 
+            <signal
+              name="clicked"
+              handler="on_text_binding_reset_clicked"
+              swapped="False"
               object="text_binding_input"
             />
           </object>
