@@ -1,39 +1,45 @@
 #include <gtk/gtk.h>
 
-static void
-on_button_clicked(GtkButton *button, GtkEntry *entry)
-{
-    gtk_editable_set_text(GTK_EDITABLE(entry), "");
-}
+#include "main_window.h"
+#include "text_binding_window.h"
 
 static void
 activate(GtkApplication *app, gpointer user_data)
 {
     GtkBuilder *builder;
     GtkBuilderScope *scope;
-    GtkWindow *window;
+    GError *error = NULL;
 
     builder = gtk_builder_new();
-
     scope = gtk_builder_cscope_new();
 
-    gtk_builder_cscope_add_callback_symbol(
-        GTK_BUILDER_CSCOPE(scope),
-        "on_button_clicked",
-        G_CALLBACK(on_button_clicked)
+    /*
+     * Each module registers the callback functions that its
+     * part of main.ui refers to.
+     */
+    main_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
+    text_binding_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
+
+    gtk_builder_set_scope(
+        builder,
+        GTK_BUILDER_SCOPE(scope)
     );
 
-    gtk_builder_set_scope(builder, scope);
     g_object_unref(scope);
 
-    gtk_builder_add_from_file(builder, "main.ui", NULL);
+    if (!gtk_builder_add_from_file(builder, "main.ui", &error))
+    {
+        g_error(
+            "Failed to load main.ui: %s",
+            error->message
+        );
+    }
 
-    window = GTK_WINDOW(
-        gtk_builder_get_object(builder, "window")
-    );
-
-    gtk_window_set_application(window, app);
-    gtk_window_present(window);
+    /*
+     * Let each module initialise its own window.
+     */
+    text_binding_window_init(builder, app);
+    main_window_init(builder, app);
 
     g_object_unref(builder);
 }
@@ -45,7 +51,7 @@ main(int argc, char *argv[])
     int status;
 
     app = gtk_application_new(
-        "com.example.TextExample",
+        "com.example.GtkPlayground",
         G_APPLICATION_DEFAULT_FLAGS
     );
 
