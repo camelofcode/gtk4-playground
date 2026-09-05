@@ -1,12 +1,13 @@
 #include <gtk/gtk.h>
 
 #include "main_window.h"
-#include "text_binding_window.h"
 #include "task_list_window.h"
+#include "text_binding_window.h"
 
-static void
-activate(GtkApplication *app, gpointer user_data)
-{
+static void activate(
+    GtkApplication *app,
+    gpointer user_data
+) {
     GtkBuilder *builder;
     GtkBuilderScope *scope;
     GError *error = NULL;
@@ -22,22 +23,16 @@ activate(GtkApplication *app, gpointer user_data)
     text_binding_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
     task_list_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
 
-    gtk_builder_set_scope(
-        builder,
-        GTK_BUILDER_SCOPE(scope)
-    );
+    gtk_builder_set_scope(builder, GTK_BUILDER_SCOPE(scope));
 
     g_object_unref(scope);
 
     if (!gtk_builder_add_from_resource(
             builder,
             "/com/camelofdoom/gtk-playground/main.ui",
-            &error))
-    {
-        g_error(
-            "Failed to load UI: %s",
-            error->message
-        );
+            &error
+        )) {
+        g_error("Failed to load UI: %s", error->message);
     }
 
     /*
@@ -50,9 +45,10 @@ activate(GtkApplication *app, gpointer user_data)
     g_object_unref(builder);
 }
 
-int
-main(int argc, char *argv[])
-{
+int main(
+    int argc,
+    char *argv[]
+) {
     GtkApplication *app;
     int status;
 
@@ -61,18 +57,9 @@ main(int argc, char *argv[])
         G_APPLICATION_DEFAULT_FLAGS
     );
 
-    g_signal_connect(
-        app,
-        "activate",
-        G_CALLBACK(activate),
-        NULL
-    );
+    g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
 
-    status = g_application_run(
-        G_APPLICATION(app),
-        argc,
-        argv
-    );
+    status = g_application_run(G_APPLICATION(app), argc, argv);
 
     g_object_unref(app);
 
