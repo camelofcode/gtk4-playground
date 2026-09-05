@@ -4,8 +4,8 @@
   <!-- interface-name main.ui -->
   <requires lib="gtk" version="4.0"/>
     <object class="GtkWindow" id="main_window">
-    <property name="default-height">150</property>
-    <property name="default-width">400</property>
+    <property name="default-height">300</property>
+    <property name="default-width">300</property>
     <property name="title">GTK Playground</property>
     <child>
       <object class="GtkBox" id="main_window_box">
@@ -26,13 +26,24 @@
             />
           </object>
         </child>
+        <child>
+          <object class="GtkButton" id="open_task_list_window_button">
+            <property name="label">Task List</property>
+            <signal 
+              name="clicked"
+              handler="on_open_task_list_window_button_clicked"
+              object="task_list_window"
+              swapped="False"
+            />
+          </object>
+        </child>
       </object>
     </child>
   </object>
   <object class="GtkWindow" id="text_binding_window">
     <property name="default-height">150</property>
     <property name="default-width">400</property>
-    <property name="title">GTK Text Example</property>
+    <property name="title">Text Binding</property>
     <property name="hide-on-close">True</property>
     <child>
       <object class="GtkBox" id="text_binding_box">
@@ -65,5 +76,11 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkWindow" id="task_list_window">
+    <property name="default-height">400</property>
+    <property name="default-width">400</property>
+    <property name="title">Task List</property>
+    <property name="hide-on-close">True</property>
   </object>
 </interface>

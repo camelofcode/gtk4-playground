@@ -2,6 +2,7 @@
 
 #include "main_window.h"
 #include "text_binding_window.h"
+#include "task_list_window.h"
 
 static void
 activate(GtkApplication *app, gpointer user_data)
@@ -19,6 +20,7 @@ activate(GtkApplication *app, gpointer user_data)
      */
     main_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
     text_binding_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
+    task_list_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
 
     gtk_builder_set_scope(
         builder,
@@ -40,6 +42,7 @@ activate(GtkApplication *app, gpointer user_data)
      */
     text_binding_window_init(builder, app);
     main_window_init(builder, app);
+    task_list_window_init(builder, app);
 
     g_object_unref(builder);
 }

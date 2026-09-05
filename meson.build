@@ -16,6 +16,7 @@ executable(
     'main.c',
     'main_window.c',
     'text_binding_window.c',
+    'task_list_window.c'
   ],
   dependencies: gtk,
 )
