@@ -10,13 +10,24 @@ project(
 
 gtk = dependency('gtk4')
 
+gnome = import('gnome')
+
+resources = gnome.compile_resources(
+  'gtk-playground-resources',
+  'resources.gresource.xml',
+  source_dir: '.'
+)
+
+sources = files(
+  'main.c',
+  'main_window.c',
+  'text_binding_window.c',
+  'task_list_window.c',
+)
+
 executable(
   'gtk-playground',
-  [
-    'main.c',
-    'main_window.c',
-    'text_binding_window.c',
-    'task_list_window.c'
-  ],
+  sources,
+  resources,
   dependencies: gtk,
 )

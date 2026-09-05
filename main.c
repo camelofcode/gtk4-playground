@@ -29,10 +29,13 @@ activate(GtkApplication *app, gpointer user_data)
 
     g_object_unref(scope);
 
-    if (!gtk_builder_add_from_file(builder, "main.ui", &error))
+    if (!gtk_builder_add_from_resource(
+            builder,
+            "/com/camelofdoom/gtk-playground/main.ui",
+            &error))
     {
         g_error(
-            "Failed to load main.ui: %s",
+            "Failed to load UI: %s",
             error->message
         );
     }
