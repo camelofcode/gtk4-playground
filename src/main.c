@@ -1,8 +1,8 @@
 #include <gtk/gtk.h>
 
-#include "main_window.h"
-#include "task_list_window.h"
-#include "text_binding_window.h"
+#include "src/ui/windows/main_window.h"
+#include "src/ui/windows/task_list_window.h"
+#include "src/ui/windows/text_binding_window.h"
 
 static void activate(
     GtkApplication *app,
@@ -29,7 +29,7 @@ static void activate(
 
     if (!gtk_builder_add_from_resource(
             builder,
-            "/com/camelofdoom/gtk-playground/main.ui",
+            "/com/camelofdoom/gtk-playground/resources/main.ui",
             &error
         )) {
         g_error("Failed to load UI: %s", error->message);

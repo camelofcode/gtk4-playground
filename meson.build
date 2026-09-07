@@ -14,15 +14,15 @@ gnome = import('gnome')
 
 resources = gnome.compile_resources(
   'gtk-playground-resources',
-  'resources.gresource.xml',
+  './resources/resources.gresource.xml',
   source_dir: '.'
 )
 
 sources = files(
-  'main.c',
-  'main_window.c',
-  'text_binding_window.c',
-  'task_list_window.c',
+  'src/main.c',
+  'src/ui/windows/main_window.c',
+  'src/ui/windows/text_binding_window.c',
+  'src/ui/windows/task_list_window.c',
 )
 
 executable(
