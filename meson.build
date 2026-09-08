@@ -23,6 +23,7 @@ sources = files(
   'src/ui/windows/main_window.c',
   'src/ui/windows/text_binding_window.c',
   'src/ui/windows/task_list_window.c',
+  'src/ui/widgets/task_row.c',
 )
 
 executable(
