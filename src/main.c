@@ -29,7 +29,7 @@ static void activate(
 
     if (!gtk_builder_add_from_resource(
             builder,
-            "/com/camelofdoom/gtk-playground/resources/main.ui",
+            "/com/camelofdoom/gtk4-playground/resources/main.ui",
             &error
         )) {
         g_error("Failed to load UI: %s", error->message);
@@ -53,7 +53,7 @@ int main(
     int status;
 
     app = gtk_application_new(
-        "com.example.GtkPlayground",
+        "com.example.Gtk4Playground",
         G_APPLICATION_DEFAULT_FLAGS
     );
 

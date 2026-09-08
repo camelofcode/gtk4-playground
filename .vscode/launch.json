@@ -5,7 +5,7 @@
             "name": "Debug GTK App",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/builddir/gtk-playground",
+            "program": "${workspaceFolder}/builddir/gtk4-playground",
             "cwd": "${workspaceFolder}",
             "args": [],
             "stopOnEntry": false,

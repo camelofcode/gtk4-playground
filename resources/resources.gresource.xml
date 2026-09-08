@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/camelofdoom/gtk-playground">
+  <gresource prefix="/com/camelofdoom/gtk4-playground">
     <file>resources/main.ui</file>
   </gresource>
 </gresources>

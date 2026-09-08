@@ -1,5 +1,5 @@
 project(
-  'gtk-playground',
+  'gtk4-playground',
   'c',
   version: '1.0',
   default_options: [
@@ -13,7 +13,7 @@ gtk = dependency('gtk4')
 gnome = import('gnome')
 
 resources = gnome.compile_resources(
-  'gtk-playground-resources',
+  'gtk4-playground-resources',
   './resources/resources.gresource.xml',
   source_dir: '.'
 )
@@ -26,7 +26,7 @@ sources = files(
 )
 
 executable(
-  'gtk-playground',
+  'gtk4-playground',
   sources,
   resources,
   dependencies: gtk,
