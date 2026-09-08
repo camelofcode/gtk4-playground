@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/com/camelofdoom/gtk4-playground">
     <file>resources/main.ui</file>
+    <file>resources/task-row.ui</file>
   </gresource>
 </gresources>
