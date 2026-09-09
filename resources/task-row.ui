@@ -6,11 +6,14 @@
     <property name="selectable">False</property>
     <child>
       <object class="GtkBox">
-        <property name="margin-bottom">6</property>
-        <property name="margin-end">6</property>
-        <property name="margin-start">6</property>
-        <property name="margin-top">6</property>
+        <property name="margin-bottom">3</property>
+        <property name="margin-end">3</property>
+        <property name="margin-start">3</property>
+        <property name="margin-top">3</property>
         <property name="spacing">6</property>
+        <style>
+          <class name="task-row" />
+        </style>
         <child>
           <object class="GtkLabel" id="text_label">
             <property name="ellipsize">end</property>

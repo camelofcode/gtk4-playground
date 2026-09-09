@@ -119,6 +119,9 @@
             <child>
               <object class="GtkListBox" id="task_list">
                 <property name="selection-mode">none</property>
+                <style>
+                  <class name="task-list-container" />
+                </style>
               </object>
             </child>
           </object>

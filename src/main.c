@@ -4,13 +4,34 @@
 #include "src/ui/windows/task_list_window.h"
 #include "src/ui/windows/text_binding_window.h"
 
+static void load_css(void) {
+    GtkCssProvider *provider = gtk_css_provider_new();
+
+    gtk_css_provider_load_from_resource(
+        provider,
+        "/com/camelofdoom/gtk4-playground/resources/app.css"
+    );
+
+    gtk_style_context_add_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(provider),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+    );
+
+    g_object_unref(provider);
+}
+
 static void activate(
     GtkApplication *app,
     gpointer user_data
 ) {
+    (void)user_data;
+
     GtkBuilder *builder;
     GtkBuilderScope *scope;
     GError *error = NULL;
+
+    load_css();
 
     builder = gtk_builder_new();
     scope = gtk_builder_cscope_new();
