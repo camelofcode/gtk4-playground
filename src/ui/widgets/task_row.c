@@ -1,4 +1,6 @@
 #include "task_row.h"
+#include "gtk/gtk.h"
+#include "gtk/gtkshortcut.h"
 
 enum {
     PROP_0,
@@ -37,9 +39,17 @@ static void task_row_update_appearance(TaskRow *self) {
 
     gtk_label_set_text(self->text_label, self->text);
 
+    char *complete_class = "complete";
+
     if (self->done) {
         attributes = pango_attr_list_new();
         pango_attr_list_insert(attributes, pango_attr_strikethrough_new(TRUE));
+
+        if (!gtk_widget_has_css_class((GtkWidget *)self, complete_class))
+            gtk_widget_add_css_class((GtkWidget *)self, complete_class);
+    } else {
+        if (gtk_widget_has_css_class((GtkWidget *)self, complete_class))
+            gtk_widget_remove_css_class((GtkWidget *)self, complete_class);
     }
 
     gtk_label_set_attributes(self->text_label, attributes);
