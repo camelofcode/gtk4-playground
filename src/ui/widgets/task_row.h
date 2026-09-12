@@ -1,6 +1,7 @@
 #ifndef TASK_ROW_H
 #define TASK_ROW_H
 
+#include "src/core/task.h"
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
@@ -15,19 +16,9 @@ G_DECLARE_FINAL_TYPE(
     GtkListBoxRow
 )
 
-TaskRow *task_row_new(const gchar *text);
-
-const gchar *task_row_get_text(TaskRow *self);
-void task_row_set_text(
-    TaskRow *self,
-    const gchar *text
-);
-
-gboolean task_row_get_done(TaskRow *self);
-void task_row_set_done(
-    TaskRow *self,
-    gboolean done
-);
+/* The row retains a reference; get_task returns a borrowed reference. */
+TaskRow *task_row_new(Task *task);
+Task *task_row_get_task(TaskRow *self);
 
 G_END_DECLS
 

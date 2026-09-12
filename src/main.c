@@ -31,6 +31,12 @@ static void activate(
     GtkBuilderScope *scope;
     GError *error = NULL;
 
+    GtkWindow *existing = gtk_application_get_active_window(app);
+    if (existing) {
+        gtk_window_present(existing);
+        return;
+    }
+
     load_css();
 
     builder = gtk_builder_new();
