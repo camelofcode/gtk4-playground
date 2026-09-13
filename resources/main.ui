@@ -18,23 +18,11 @@
         <child>
           <object class="GtkButton" id="open_text_binding_window_button">
             <property name="label">Text Binding</property>
-            <signal
-              name="clicked"
-              handler="on_open_text_binding_window_button_clicked"
-              object="text_binding_window"
-              swapped="False"
-            />
           </object>
         </child>
         <child>
           <object class="GtkButton" id="open_task_list_window_button">
             <property name="label">Task List</property>
-            <signal
-              name="clicked"
-              handler="on_open_task_list_window_button_clicked"
-              object="task_list_window"
-              swapped="False"
-            />
           </object>
         </child>
       </object>
@@ -67,12 +55,6 @@
         <child>
           <object class="GtkButton" id="text_binding_button">
             <property name="label">Reset</property>
-            <signal
-              name="clicked"
-              handler="on_text_binding_reset_clicked"
-              swapped="False"
-              object="text_binding_input"
-            />
           </object>
         </child>
       </object>

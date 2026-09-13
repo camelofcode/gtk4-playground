@@ -3,8 +3,6 @@
 
 #include <gtk/gtk.h>
 
-void task_list_window_register_callbacks(GtkBuilderCScope *scope);
-
 void task_list_window_init(
     GtkBuilder *builder,
     GtkApplication *app

@@ -4,15 +4,9 @@ static void on_text_binding_reset_clicked(
     GtkButton *button,
     GtkEditable *entry
 ) {
-    gtk_editable_set_text(entry, "");
-}
+    (void)button;
 
-void text_binding_window_register_callbacks(GtkBuilderCScope *scope) {
-    gtk_builder_cscope_add_callback_symbol(
-        scope,
-        "on_text_binding_reset_clicked",
-        G_CALLBACK(on_text_binding_reset_clicked)
-    );
+    gtk_editable_set_text(entry, "");
 }
 
 void text_binding_window_init(
@@ -24,6 +18,14 @@ void text_binding_window_init(
 
     window = GTK_WINDOW(gtk_builder_get_object(builder, "text_binding_window"));
     main_window = GTK_WINDOW(gtk_builder_get_object(builder, "main_window"));
+
+    g_signal_connect_object(
+        gtk_builder_get_object(builder, "text_binding_button"),
+        "clicked",
+        G_CALLBACK(on_text_binding_reset_clicked),
+        gtk_builder_get_object(builder, "text_binding_input"),
+        0
+    );
 
     gtk_window_set_application(window, app);
 

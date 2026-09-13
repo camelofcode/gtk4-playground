@@ -27,6 +27,8 @@ sources = files(
   'src/ui/windows/main_window.c',
   'src/ui/windows/text_binding_window.c',
   'src/ui/windows/task_list_window.c',
+  'src/ui/error_dialog.c',
+  'src/ui/gtk_helpers.c',
   'src/ui/widgets/task_row.c',
 )
 
@@ -54,6 +56,8 @@ window_test = executable(
   'src/core/task_storage.c',
   'src/ui/widgets/task_row.c',
   'src/ui/windows/task_list_window.c',
+  'src/ui/error_dialog.c',
+  'src/ui/gtk_helpers.c',
   'src/ui/windows/main_window.c',
   'src/ui/windows/text_binding_window.c',
   resources,

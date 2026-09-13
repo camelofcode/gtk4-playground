@@ -1,5 +1,5 @@
 #include "task_row.h"
-#include "gtk/gtk.h"
+#include "src/ui/gtk_helpers.h"
 
 enum {
     DELETE_REQUESTED,
@@ -12,6 +12,7 @@ struct _TaskRow {
     GtkLabel *text_label;
     GtkToggleButton *done_button;
     GtkImage *done_image;
+    GtkButton *delete_button;
 
     Task *task;
 };
@@ -27,18 +28,21 @@ static guint signals[N_SIGNALS];
 static void task_row_update_appearance(TaskRow *self) {
     PangoAttrList *attributes = NULL;
 
-    if (!self->task)
+    if (!self->task) {
         return;
+    }
     gtk_toggle_button_set_active(self->done_button, task_get_done(self->task));
 
     gtk_label_set_text(self->text_label, task_get_text(self->task));
 
+    ui_toggle_css_class(
+        GTK_WIDGET(self),
+        "complete",
+        task_get_done(self->task)
+    );
     if (task_get_done(self->task)) {
         attributes = pango_attr_list_new();
         pango_attr_list_insert(attributes, pango_attr_strikethrough_new(TRUE));
-        gtk_widget_add_css_class(GTK_WIDGET(self), "complete");
-    } else {
-        gtk_widget_remove_css_class(GTK_WIDGET(self), "complete");
     }
 
     gtk_label_set_attributes(self->text_label, attributes);
@@ -63,8 +67,9 @@ static void task_row_on_done_toggled(
     GtkToggleButton *button,
     TaskRow *self
 ) {
-    if (self->task)
+    if (self->task) {
         task_set_done(self->task, gtk_toggle_button_get_active(button));
+    }
 }
 
 static void task_row_on_delete_clicked(
@@ -78,8 +83,9 @@ static void task_row_on_delete_clicked(
 
 static void task_row_dispose(GObject *object) {
     TaskRow *self = TASK_ROW(object);
-    if (self->task)
+    if (self->task) {
         g_signal_handlers_disconnect_by_data(self->task, self);
+    }
     g_clear_object(&self->task);
     gtk_widget_dispose_template(GTK_WIDGET(self), TASK_TYPE_ROW);
     G_OBJECT_CLASS(task_row_parent_class)->dispose(object);
@@ -120,18 +126,23 @@ static void task_row_class_init(TaskRowClass *klass) {
     gtk_widget_class_bind_template_child(widget_class, TaskRow, text_label);
     gtk_widget_class_bind_template_child(widget_class, TaskRow, done_button);
     gtk_widget_class_bind_template_child(widget_class, TaskRow, done_image);
-    gtk_widget_class_bind_template_callback(
-        widget_class,
-        task_row_on_done_toggled
-    );
-    gtk_widget_class_bind_template_callback(
-        widget_class,
-        task_row_on_delete_clicked
-    );
+    gtk_widget_class_bind_template_child(widget_class, TaskRow, delete_button);
 }
 
 static void task_row_init(TaskRow *self) {
     gtk_widget_init_template(GTK_WIDGET(self));
+    g_signal_connect(
+        self->done_button,
+        "toggled",
+        G_CALLBACK(task_row_on_done_toggled),
+        self
+    );
+    g_signal_connect(
+        self->delete_button,
+        "clicked",
+        G_CALLBACK(task_row_on_delete_clicked),
+        self
+    );
 }
 
 TaskRow *task_row_new(Task *task) {

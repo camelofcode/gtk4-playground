@@ -9,3 +9,5 @@ AlignAfterOpenBracket: BlockIndent
 
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
+
+InsertBraces: true

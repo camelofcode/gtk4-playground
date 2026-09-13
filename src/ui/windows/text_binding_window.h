@@ -3,8 +3,6 @@
 
 #include <gtk/gtk.h>
 
-void text_binding_window_register_callbacks(GtkBuilderCScope *scope);
-
 void text_binding_window_init(
     GtkBuilder *builder,
     GtkApplication *app

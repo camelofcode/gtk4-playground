@@ -23,11 +23,6 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="done_button">
-            <signal
-              name="toggled"
-              handler="task_row_on_done_toggled"
-              swapped="no"
-            />
             <style>
               <class name="flat"/>
             </style>
@@ -41,11 +36,6 @@
         <child>
           <object class="GtkButton" id="delete_button">
             <property name="tooltip-text">Delete task</property>
-            <signal
-              name="clicked"
-              handler="task_row_on_delete_clicked"
-              swapped="no"
-            />
             <style>
               <class name="flat"/>
             </style>

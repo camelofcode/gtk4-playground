@@ -39,34 +39,41 @@ GListStore *task_storage_load(
             NULL,
             &local_error
         )) {
-        if (g_error_matches(local_error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+        if (g_error_matches(local_error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
             return g_steal_pointer(&tasks);
+        }
         g_propagate_error(error, g_steal_pointer(&local_error));
         return NULL;
     }
 
     g_autoptr(JsonParser) parser = json_parser_new();
-    if (!json_parser_load_from_data(parser, contents, length, error))
+    if (!json_parser_load_from_data(parser, contents, length, error)) {
         return NULL;
+    }
     JsonNode *root = json_parser_get_root(parser);
-    if (!root || !JSON_NODE_HOLDS_OBJECT(root))
+    if (!root || !JSON_NODE_HOLDS_OBJECT(root)) {
         goto invalid;
+    }
     JsonObject *object = json_node_get_object(root);
     if (!member_has_type(object, "version", G_TYPE_INT64) ||
-        json_object_get_int_member(object, "version") != 1)
+        json_object_get_int_member(object, "version") != 1) {
         goto invalid;
+    }
     JsonNode *node = json_object_get_member(object, "tasks");
-    if (!node || !JSON_NODE_HOLDS_ARRAY(node))
+    if (!node || !JSON_NODE_HOLDS_ARRAY(node)) {
         goto invalid;
+    }
     JsonArray *array = json_node_get_array(node);
     for (guint i = 0; i < json_array_get_length(array); i++) {
         node = json_array_get_element(array, i);
-        if (!JSON_NODE_HOLDS_OBJECT(node))
+        if (!JSON_NODE_HOLDS_OBJECT(node)) {
             goto invalid;
+        }
         object = json_node_get_object(node);
         if (!member_has_type(object, "text", G_TYPE_STRING) ||
-            !member_has_type(object, "done", G_TYPE_BOOLEAN))
+            !member_has_type(object, "done", G_TYPE_BOOLEAN)) {
             goto invalid;
+        }
         g_autoptr(Task) task =
             task_new(json_object_get_string_member(object, "text"));
         task_set_done(task, json_object_get_boolean_member(object, "done"));

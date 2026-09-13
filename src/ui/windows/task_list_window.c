@@ -1,6 +1,7 @@
 #include "task_list_window.h"
 
 #include "src/core/task_storage.h"
+#include "src/ui/error_dialog.h"
 #include "src/ui/widgets/task_row.h"
 
 typedef struct {
@@ -10,16 +11,6 @@ typedef struct {
     gchar *path;
     gboolean writable;
 } TaskListWindowData;
-
-static void show_error(
-    GtkWindow *parent,
-    const gchar *action,
-    GError *error
-) {
-    g_autoptr(GtkAlertDialog) dialog = gtk_alert_dialog_new("%s", action);
-    gtk_alert_dialog_set_detail(dialog, error->message);
-    gtk_alert_dialog_show(dialog, parent);
-}
 
 static gboolean save_tasks(
     TaskListWindowData *data,
@@ -43,8 +34,9 @@ static void on_shutdown(
 ) {
     (void)app;
     g_autoptr(GError) error = NULL;
-    if (!save_tasks(data, &error))
+    if (!save_tasks(data, &error)) {
         g_warning("Could not save tasks during shutdown: %s", error->message);
+    }
 }
 
 static void on_task_delete_requested(
@@ -120,14 +112,10 @@ static gboolean on_window_close_request(
 ) {
     g_autoptr(GError) error = NULL;
     if (!save_tasks(data, &error)) {
-        show_error(window, "Could not save tasks", error);
+        ui_show_error(window, "Could not save tasks", error);
         return TRUE;
     }
     return FALSE;
-}
-
-void task_list_window_register_callbacks(GtkBuilderCScope *scope) {
-    (void)scope;
 }
 
 void task_list_window_init(
@@ -153,7 +141,7 @@ void task_list_window_init(
     data->writable = data->tasks != NULL;
     if (!data->writable) {
         data->tasks = g_list_store_new(TASK_TYPE_ITEM);
-        show_error(
+        ui_show_error(
             main_window,
             "Could not load tasks. Editing is disabled to protect the saved "
             "file.",

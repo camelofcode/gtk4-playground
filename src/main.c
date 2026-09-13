@@ -28,7 +28,6 @@ static void activate(
     (void)user_data;
 
     GtkBuilder *builder;
-    GtkBuilderScope *scope;
     GError *error = NULL;
 
     GtkWindow *existing = gtk_application_get_active_window(app);
@@ -40,20 +39,6 @@ static void activate(
     load_css();
 
     builder = gtk_builder_new();
-    scope = gtk_builder_cscope_new();
-
-    /*
-     * Each module registers the callback functions that its
-     * part of main.ui refers to.
-     */
-    main_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
-    text_binding_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
-    task_list_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
-
-    gtk_builder_set_scope(builder, GTK_BUILDER_SCOPE(scope));
-
-    g_object_unref(scope);
-
     if (!gtk_builder_add_from_resource(
             builder,
             "/com/camelofdoom/gtk4-playground/resources/main.ui",

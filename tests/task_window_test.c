@@ -14,11 +14,6 @@ static void activate_test(
 ) {
     (void)user_data;
     g_autoptr(GtkBuilder) builder = gtk_builder_new();
-    g_autoptr(GtkBuilderScope) scope = gtk_builder_cscope_new();
-    main_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
-    text_binding_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
-    task_list_window_register_callbacks(GTK_BUILDER_CSCOPE(scope));
-    gtk_builder_set_scope(builder, scope);
     g_autoptr(GError) build_error = NULL;
     g_assert_true(gtk_builder_add_from_resource(
         builder,
@@ -26,6 +21,7 @@ static void activate_test(
         &build_error
     ));
     g_assert_no_error(build_error);
+    text_binding_window_init(builder, app);
     main_window_init(builder, app);
     task_list_window_init(builder, app);
     GtkWidget *main_window =
@@ -36,6 +32,31 @@ static void activate_test(
     GtkListBox *list =
         GTK_LIST_BOX(gtk_builder_get_object(builder, "task_list"));
     gtk_window_present(GTK_WINDOW(window));
+
+    /* Exercise the connections established by each window initializer. */
+    GtkWidget *text_window =
+        GTK_WIDGET(gtk_builder_get_object(builder, "text_binding_window"));
+    g_signal_emit_by_name(
+        gtk_builder_get_object(builder, "open_text_binding_window_button"),
+        "clicked"
+    );
+    g_assert_true(gtk_widget_get_visible(text_window));
+    GtkEntry *text_input =
+        GTK_ENTRY(gtk_builder_get_object(builder, "text_binding_input"));
+    gtk_editable_set_text(GTK_EDITABLE(text_input), "Reset me");
+    g_signal_emit_by_name(
+        gtk_builder_get_object(builder, "text_binding_button"),
+        "clicked"
+    );
+    g_assert_cmpstr(gtk_editable_get_text(GTK_EDITABLE(text_input)), ==, "");
+    gtk_window_close(GTK_WINDOW(text_window));
+    g_assert_false(gtk_widget_get_visible(text_window));
+    gtk_widget_set_visible(window, FALSE);
+    g_signal_emit_by_name(
+        gtk_builder_get_object(builder, "open_task_list_window_button"),
+        "clicked"
+    );
+    g_assert_true(gtk_widget_get_visible(window));
 
     if (run_number == 0) {
         gtk_editable_set_text(GTK_EDITABLE(input), "Persist from the UI");
@@ -85,7 +106,12 @@ static void activate_test(
             ==,
             "Saved during shutdown"
         );
-        g_signal_emit_by_name(first, "delete-requested");
+        GObject *delete_button = gtk_widget_get_template_child(
+            GTK_WIDGET(first),
+            TASK_TYPE_ROW,
+            "delete_button"
+        );
+        g_signal_emit_by_name(delete_button, "clicked");
         g_assert_null(gtk_list_box_get_row_at_index(list, 1));
     }
     gtk_window_close(GTK_WINDOW(main_window));
