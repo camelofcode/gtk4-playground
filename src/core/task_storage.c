@@ -1,4 +1,5 @@
 #include "task_storage.h"
+#include "task.h"
 #include <errno.h>
 #include <glib/gstdio.h>
 #include <json-glib/json-glib.h>

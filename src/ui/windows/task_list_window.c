@@ -2,6 +2,7 @@
 
 #include "src/core/task_storage.h"
 #include "src/ui/error_dialog.h"
+#include "src/ui/gtk_helpers.h"
 #include "src/ui/widgets/task_row.h"
 
 typedef struct {
@@ -44,15 +45,7 @@ static void on_task_delete_requested(
     TaskListWindowData *data
 ) {
     Task *task = task_row_get_task(row);
-    for (guint i = 0; i < g_list_model_get_n_items(G_LIST_MODEL(data->tasks));
-         i++) {
-        g_autoptr(Task) item =
-            g_list_model_get_item(G_LIST_MODEL(data->tasks), i);
-        if (item == task) {
-            g_list_store_remove(data->tasks, i);
-            return;
-        }
-    }
+    remove_item_from_list(data->tasks, task);
 }
 
 static GtkWidget *create_row(

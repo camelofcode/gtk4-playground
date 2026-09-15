@@ -10,4 +10,7 @@ void ui_toggle_css_class(
     gboolean enabled
 );
 
+/* Removes the first pointer-identical item, if present. Borrows item. */
+void remove_item_from_list(GListStore *list, gpointer item);
+
 #endif

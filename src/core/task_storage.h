@@ -1,7 +1,6 @@
 #ifndef TASK_STORAGE_H
 #define TASK_STORAGE_H
 
-#include "task.h"
 #include <gio/gio.h>
 
 /* Returned path and model are owned by the caller. Missing files load empty.
