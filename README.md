@@ -2,6 +2,35 @@
 
 Small C/GTK 4 examples, built with Meson and Ninja.
 
+## Project structure
+
+```text
+.
+├── meson.build                 # Build targets and dependencies
+├── resources.gresource.xml     # Manifest of embedded application assets
+├── design/                     # Cambalache project (.cmb)
+├── src/
+│   ├── main.c                  # Application startup and UI loading
+│   ├── core/                   # Task model and JSON persistence
+│   └── ui/
+│       ├── windows/            # Window behaviour and signal connections
+│       ├── widgets/            # Reusable widget implementations
+│       ├── gtk_helpers.c/.h    # Shared GTK helpers
+│       └── error_dialog.c/.h   # Error reporting UI
+├── ui/
+│   ├── windows/                # One .ui layout per window
+│   ├── widgets/                # Reusable .ui widget templates
+│   └── sass/                   # SCSS entry point and style partials
+├── tests/                      # Storage and window integration tests
+└── builddir/                   # Generated build output (not committed)
+```
+
+Layout belongs in `.ui` files, behaviour in C, and styling in SCSS.
+The `ui/` and `src/ui/` folders mirror each other: for example,
+`ui/windows/task-list-window.ui` defines the layout and
+`src/ui/windows/task_list_window.c` connects its behaviour. GTK-independent
+model and persistence code lives in `src/core/`.
+
 ## Dependencies
 
 You need a C17 compiler, Meson, Ninja, pkg-config, GTK 4.10 or newer,
