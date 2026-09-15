@@ -19,6 +19,14 @@ void text_binding_window_init(
     window = GTK_WINDOW(gtk_builder_get_object(builder, "text_binding_window"));
     main_window = GTK_WINDOW(gtk_builder_get_object(builder, "main_window"));
 
+    g_object_bind_property(
+        gtk_builder_get_object(builder, "text_binding_input"),
+        "text",
+        gtk_builder_get_object(builder, "text_binding_label"),
+        "label",
+        G_BINDING_SYNC_CREATE
+    );
+
     g_signal_connect_object(
         gtk_builder_get_object(builder, "text_binding_button"),
         "clicked",

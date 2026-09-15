@@ -5,6 +5,8 @@
 #include "src/ui/gtk_helpers.h"
 #include "src/ui/widgets/task_row.h"
 
+static const char TASK_LIST_DATA_KEY[] = "task-list-data";
+
 typedef struct {
     GtkEntry *input;
     GtkListBox *list;
@@ -80,20 +82,11 @@ static void add_task(TaskListWindowData *data) {
     g_free(text);
 }
 
-static void on_add_task_button_clicked(
-    GtkButton *button,
+static void on_add_task_requested(
+    GtkWidget *widget,
     TaskListWindowData *data
 ) {
-    (void)button;
-
-    add_task(data);
-}
-
-static void on_task_input_activate(
-    GtkEntry *entry,
-    TaskListWindowData *data
-) {
-    (void)entry;
+    (void)widget;
 
     add_task(data);
 }
@@ -143,7 +136,7 @@ void task_list_window_init(
         gtk_widget_set_sensitive(GTK_WIDGET(data->input), FALSE);
         gtk_widget_set_sensitive(GTK_WIDGET(add_button), FALSE);
     }
-    g_object_set_data_full(G_OBJECT(app), "task-list-data", data, free_data);
+    g_object_set_data_full(G_OBJECT(app), TASK_LIST_DATA_KEY, data, free_data);
     g_signal_connect(
         window,
         "close-request",
@@ -168,13 +161,13 @@ void task_list_window_init(
     g_signal_connect(
         add_button,
         "clicked",
-        G_CALLBACK(on_add_task_button_clicked),
+        G_CALLBACK(on_add_task_requested),
         data
     );
     g_signal_connect(
         data->input,
         "activate",
-        G_CALLBACK(on_task_input_activate),
+        G_CALLBACK(on_add_task_requested),
         data
     );
 

@@ -47,10 +47,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="text_binding_label">
-            <property name="label" bind-source="text_binding_input" bind-property="text"
-              bind-flags="sync-create" />
-          </object>
+          <object class="GtkLabel" id="text_binding_label" />
         </child>
         <child>
           <object class="GtkButton" id="text_binding_button">
