@@ -14,13 +14,20 @@ static void activate_test(
 ) {
     (void)user_data;
     g_autoptr(GtkBuilder) builder = gtk_builder_new();
-    g_autoptr(GError) build_error = NULL;
-    g_assert_true(gtk_builder_add_from_resource(
-        builder,
-        "/com/camelofdoom/gtk4-playground/resources/main.ui",
-        &build_error
-    ));
-    g_assert_no_error(build_error);
+    const char *window_resources[] = {
+        "/com/camelofdoom/gtk4-playground/ui/windows/main-window.ui",
+        "/com/camelofdoom/gtk4-playground/ui/windows/text-binding-window.ui",
+        "/com/camelofdoom/gtk4-playground/ui/windows/task-list-window.ui",
+    };
+    for (guint i = 0; i < G_N_ELEMENTS(window_resources); i++) {
+        g_autoptr(GError) build_error = NULL;
+        g_assert_true(gtk_builder_add_from_resource(
+            builder,
+            window_resources[i],
+            &build_error
+        ));
+        g_assert_no_error(build_error);
+    }
     text_binding_window_init(builder, app);
     main_window_init(builder, app);
     task_list_window_init(builder, app);

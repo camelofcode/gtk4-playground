@@ -14,10 +14,27 @@ json_glib = dependency('json-glib-1.0', version: '>=1.6')
 
 gnome = import('gnome')
 
+sass = find_program('sass', required: false)
+if sass.found()
+  sass_args = ['--no-source-map', '--style=expanded']
+else
+  sass = find_program('sassc')
+  sass_args = ['--style', 'expanded']
+endif
+
+app_css = custom_target(
+  'app-css',
+  input: 'ui/sass/app.scss',
+  depend_files: files('ui/sass/_task-list-window.scss'),
+  output: 'app.css',
+  command: [sass] + sass_args + ['@INPUT@', '@OUTPUT@'],
+)
+
 resources = gnome.compile_resources(
   'gtk4-playground-resources',
-  './resources/resources.gresource.xml',
-  source_dir: '.'
+  'resources.gresource.xml',
+  source_dir: [meson.current_build_dir(), meson.current_source_dir()],
+  dependencies: app_css,
 )
 
 sources = files(

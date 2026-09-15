@@ -3,12 +3,11 @@
 }
 
 .task-row {
-    border: 1px solid alpha(currentColor, 0.20);
+    border: 1px solid #{"alpha(currentColor, 0.20)"};
     border-radius: 6px;
     padding-left: 5px;
     margin-bottom: 5px;
-}
-
-.task-row.complete {
-	color: alpha(currentColor, 0.3);
+    &.complete {
+        color: #{"alpha(currentColor, 0.3)"};
+    }
 }
