@@ -71,13 +71,14 @@ GListStore *task_storage_load(
             goto invalid;
         }
         object = json_node_get_object(node);
-        if (!member_has_type(object, "text", G_TYPE_STRING) ||
-            !member_has_type(object, "done", G_TYPE_BOOLEAN)) {
+        /* GObject serialization omits properties with default values. */
+        if ((json_object_has_member(object, "text") &&
+             !member_has_type(object, "text", G_TYPE_STRING)) ||
+            (json_object_has_member(object, "done") &&
+             !member_has_type(object, "done", G_TYPE_BOOLEAN))) {
             goto invalid;
         }
-        g_autoptr(Task) task =
-            task_new(json_object_get_string_member(object, "text"));
-        task_set_done(task, json_object_get_boolean_member(object, "done"));
+        g_autoptr(GObject) task = json_gobject_deserialize(TASK_TYPE_ITEM, node);
         g_list_store_append(tasks, task);
     }
     return g_steal_pointer(&tasks);
@@ -87,7 +88,7 @@ invalid:
         error,
         G_IO_ERROR,
         G_IO_ERROR_INVALID_DATA,
-        "Expected a version 1 task file with text and done fields."
+        "Expected a version 1 task file with string text and boolean done properties."
     );
     return NULL;
 }
@@ -105,12 +106,7 @@ gboolean task_storage_save(
     json_builder_begin_array(builder);
     for (guint i = 0; i < g_list_model_get_n_items(tasks); i++) {
         g_autoptr(Task) task = g_list_model_get_item(tasks, i);
-        json_builder_begin_object(builder);
-        json_builder_set_member_name(builder, "text");
-        json_builder_add_string_value(builder, task_get_text(task));
-        json_builder_set_member_name(builder, "done");
-        json_builder_add_boolean_value(builder, task_get_done(task));
-        json_builder_end_object(builder);
+        json_builder_add_value(builder, json_gobject_serialize(G_OBJECT(task)));
     }
     json_builder_end_array(builder);
     json_builder_end_object(builder);

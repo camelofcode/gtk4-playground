@@ -1,3 +1,4 @@
+#include "src/core/task.h"
 #include "src/core/task_storage.h"
 #include <glib/gstdio.h>
 
@@ -10,7 +11,7 @@ static void round_trip(void) {
     g_autoptr(GListStore) tasks = task_storage_load(path, &error);
     g_assert_no_error(error);
     g_assert_cmpuint(g_list_model_get_n_items(G_LIST_MODEL(tasks)), ==, 0);
-    const gchar *texts[] = {"Milk \"quoted\"\n新しい 🐈", "Same", "Same"};
+    const gchar *texts[] = {"Milk \"quoted\"\n新しい 🐈", "Same", "Same", ""};
     for (guint i = 0; i < G_N_ELEMENTS(texts); i++) {
         g_autoptr(Task) task = task_new(texts[i]);
         task_set_done(task, i == 1);
@@ -20,7 +21,7 @@ static void round_trip(void) {
     g_assert_no_error(error);
     g_autoptr(GListStore) loaded = task_storage_load(path, &error);
     g_assert_no_error(error);
-    g_assert_cmpuint(g_list_model_get_n_items(G_LIST_MODEL(loaded)), ==, 3);
+    g_assert_cmpuint(g_list_model_get_n_items(G_LIST_MODEL(loaded)), ==, G_N_ELEMENTS(texts));
     for (guint i = 0; i < G_N_ELEMENTS(texts); i++) {
         g_autoptr(Task) task = g_list_model_get_item(G_LIST_MODEL(loaded), i);
         g_assert_cmpstr(task_get_text(task), ==, texts[i]);
@@ -33,6 +34,27 @@ static void round_trip(void) {
     tasks = task_storage_load(path, &error);
     g_assert_no_error(error);
     g_assert_cmpuint(g_list_model_get_n_items(G_LIST_MODEL(tasks)), ==, 0);
+    g_remove(path);
+    g_rmdir(directory);
+}
+
+static void explicit_properties(void) {
+    g_autofree gchar *directory = g_dir_make_tmp("tasks-explicit-XXXXXX", NULL);
+    g_autofree gchar *path = g_build_filename(directory, "tasks.json", NULL);
+    g_autoptr(GError) error = NULL;
+    const gchar *json =
+        "{\"version\":1,\"tasks\":[{\"text\":\"Existing\",\"done\":true},"
+        "{\"text\":\"\",\"done\":false},{}]}";
+    g_assert_true(g_file_set_contents(path, json, -1, &error));
+    g_assert_no_error(error);
+    g_autoptr(GListStore) tasks = task_storage_load(path, &error);
+    g_assert_no_error(error);
+    g_assert_cmpuint(g_list_model_get_n_items(G_LIST_MODEL(tasks)), ==, 3);
+    for (guint i = 0; i < 3; i++) {
+        g_autoptr(Task) task = g_list_model_get_item(G_LIST_MODEL(tasks), i);
+        g_assert_cmpstr(task_get_text(task), ==, i == 0 ? "Existing" : "");
+        g_assert_cmpint(task_get_done(task), ==, i == 0);
+    }
     g_remove(path);
     g_rmdir(directory);
 }
@@ -86,6 +108,7 @@ int main(
 ) {
     g_test_init(&argc, &argv, NULL);
     g_test_add_func("/storage/round-trip", round_trip);
+    g_test_add_func("/storage/explicit-properties", explicit_properties);
     g_test_add_func("/storage/invalid-files", invalid_files);
     g_test_add_func("/storage/io-errors", io_errors);
     return g_test_run();
