@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <object class="GtkWindow" id="file_tree_window">
+    <property name="default-height">600</property>
+    <property name="default-width">800</property>
+    <property name="hide-on-close">True</property>
+    <property name="title">File Tree</property>
+    <child>
+      <object class="GtkBox" id="file_tree_window_box">
+        <property name="margin-bottom">20</property>
+        <property name="margin-end">20</property>
+        <property name="margin-start">20</property>
+        <property name="margin-top">20</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkBox" id="folder_chooser_box">
+            <style>
+              <class name="linked"/>
+            </style>
+            <child>
+              <object class="GtkEntry" id="folder_path_entry">
+                <property name="editable">False</property>
+                <property name="hexpand">True</property>
+                <property name="placeholder-text">No folder selected</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="folder_browse_button">
+                <property name="tooltip-text">Browse for a folder</property>
+                <child>
+                  <object class="GtkImage" id="folder_browse_image">
+                    <property name="icon-name">folder-open-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="file_tree_status_box">
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkSpinner" id="file_tree_spinner">
+                <property name="visible">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="file_tree_status_label">
+                <property name="halign">start</property>
+                <property name="label">Choose a folder to load its contents</property>
+                <property name="selectable">True</property>
+                <property name="xalign">0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="file_tree_view_container">
+            <property name="vexpand">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -23,6 +23,11 @@
             <property name="label">Task List</property>
           </object>
         </child>
+        <child>
+          <object class="GtkButton" id="open_file_tree_window_button">
+            <property name="label">File Tree</property>
+          </object>
+        </child>
       </object>
     </child>
   </object>

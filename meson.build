@@ -41,9 +41,14 @@ sources = files(
   'src/main.c',
   'src/core/task.c',
   'src/core/task_storage.c',
+  'src/core/file_system_node.c',
+  'src/core/file_system_loader.c',
+  'src/ui/models/file_tree_model.c',
+  'src/ui/widgets/file_tree_view.c',
   'src/ui/windows/main_window.c',
   'src/ui/windows/text_binding_window.c',
   'src/ui/windows/task_list_window.c',
+  'src/ui/windows/file_tree_window.c',
   'src/ui/error_dialog.c',
   'src/ui/gtk_helpers.c',
   'src/ui/widgets/task_row.c',
@@ -66,17 +71,46 @@ storage_test = executable(
 )
 test('task-storage', storage_test)
 
+file_system_loader_test = executable(
+  'file-system-loader-test',
+  'tests/file_system_loader_test.c',
+  'src/core/file_system_node.c',
+  'src/core/file_system_loader.c',
+  include_directories: include_directories('.'),
+  dependencies: gtk,
+)
+test('file-system-loader', file_system_loader_test)
+
+file_tree_view_test = executable(
+  'file-tree-view-test',
+  'tests/file_tree_view_test.c',
+  'src/core/file_system_node.c',
+  'src/core/file_system_loader.c',
+  'src/ui/models/file_tree_model.c',
+  'src/ui/widgets/file_tree_view.c',
+  resources,
+  include_directories: include_directories('.'),
+  dependencies: gtk,
+)
+# Requires a display; skipped automatically when one is unavailable.
+test('file-tree-view', file_tree_view_test, env: ['G_DEBUG=fatal-warnings'])
+
 window_test = executable(
   'task-window-test',
   'tests/task_window_test.c',
   'src/core/task.c',
   'src/core/task_storage.c',
+  'src/core/file_system_node.c',
+  'src/core/file_system_loader.c',
+  'src/ui/models/file_tree_model.c',
+  'src/ui/widgets/file_tree_view.c',
   'src/ui/widgets/task_row.c',
   'src/ui/windows/task_list_window.c',
   'src/ui/error_dialog.c',
   'src/ui/gtk_helpers.c',
   'src/ui/windows/main_window.c',
   'src/ui/windows/text_binding_window.c',
+  'src/ui/windows/file_tree_window.c',
   resources,
   include_directories: include_directories('.'),
   dependencies: [gtk, json_glib],

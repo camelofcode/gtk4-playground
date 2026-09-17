@@ -4,7 +4,9 @@
     <file>ui/windows/main-window.ui</file>
     <file>ui/windows/text-binding-window.ui</file>
     <file>ui/windows/task-list-window.ui</file>
+    <file>ui/windows/file-tree-window.ui</file>
     <file>ui/widgets/task-row.ui</file>
+    <file>ui/widgets/file-tree-view.ui</file>
     <file alias="ui/app.css">app.css</file>
   </gresource>
 </gresources>

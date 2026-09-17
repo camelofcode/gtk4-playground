@@ -18,6 +18,14 @@ static void on_open_task_list_window_button_clicked(
     gtk_window_present(task_list_window);
 }
 
+static void on_open_file_tree_window_button_clicked(
+    GtkButton *button,
+    GtkWindow *file_tree_window
+) {
+    (void)button;
+    gtk_window_present(file_tree_window);
+}
+
 void main_window_init(
     GtkBuilder *builder,
     GtkApplication *app
@@ -38,6 +46,13 @@ void main_window_init(
         "clicked",
         G_CALLBACK(on_open_task_list_window_button_clicked),
         gtk_builder_get_object(builder, "task_list_window"),
+        0
+    );
+    g_signal_connect_object(
+        gtk_builder_get_object(builder, "open_file_tree_window_button"),
+        "clicked",
+        G_CALLBACK(on_open_file_tree_window_button_clicked),
+        gtk_builder_get_object(builder, "file_tree_window"),
         0
     );
 

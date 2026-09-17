@@ -1,5 +1,6 @@
 #include "src/core/task_storage.h"
 #include "src/ui/widgets/task_row.h"
+#include "src/ui/windows/file_tree_window.h"
 #include "src/ui/windows/main_window.h"
 #include "src/ui/windows/task_list_window.h"
 #include "src/ui/windows/text_binding_window.h"
@@ -18,6 +19,7 @@ static void activate_test(
         "/com/camelofdoom/gtk4-playground/ui/windows/main-window.ui",
         "/com/camelofdoom/gtk4-playground/ui/windows/text-binding-window.ui",
         "/com/camelofdoom/gtk4-playground/ui/windows/task-list-window.ui",
+        "/com/camelofdoom/gtk4-playground/ui/windows/file-tree-window.ui",
     };
     for (guint i = 0; i < G_N_ELEMENTS(window_resources); i++) {
         g_autoptr(GError) build_error = NULL;
@@ -31,6 +33,7 @@ static void activate_test(
     text_binding_window_init(builder, app);
     main_window_init(builder, app);
     task_list_window_init(builder, app);
+    file_tree_window_init(builder, app);
     GtkWidget *main_window =
         GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
     GtkWidget *window =
