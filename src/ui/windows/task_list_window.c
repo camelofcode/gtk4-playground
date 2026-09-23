@@ -11,7 +11,6 @@ typedef struct {
     GtkEntry *input;
     GtkListBox *list;
     GListStore *tasks;
-    gchar *path;
     gboolean writable;
 } TaskListWindowData;
 
@@ -20,14 +19,13 @@ static gboolean save_tasks(
     GError **error
 ) {
     return !data->writable ||
-           task_storage_save(G_LIST_MODEL(data->tasks), data->path, error);
+           task_storage_save(G_LIST_MODEL(data->tasks), error);
 }
 
 /* Application-owned data survives destruction of either window. */
 static void free_data(gpointer pointer) {
     TaskListWindowData *data = pointer;
     g_clear_object(&data->tasks);
-    g_free(data->path);
     g_free(data);
 }
 
@@ -121,9 +119,8 @@ void task_list_window_init(
     data->input = GTK_ENTRY(gtk_builder_get_object(builder, "task_input"));
     data->list = GTK_LIST_BOX(gtk_builder_get_object(builder, "task_list"));
 
-    data->path = task_storage_default_path();
     g_autoptr(GError) error = NULL;
-    data->tasks = task_storage_load(data->path, &error);
+    data->tasks = task_storage_load(&error);
     data->writable = data->tasks != NULL;
     if (!data->writable) {
         data->tasks = g_list_store_new(TASK_TYPE_ITEM);

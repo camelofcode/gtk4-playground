@@ -129,7 +129,7 @@ without a display.
 `done` properties. A GListStore holds the tasks; the task window binds that
 collection to rows, which observe and update their Task objects.
 
-`src/core/task_storage.c` reads and writes versioned JSON using JSON-GLib.
+`src/core/task_storage.c` reads and writes a plain JSON array of tasks using JSON-GLib.
 The file is `$XDG_DATA_HOME/gtk4-playground/tasks.json`, normally
 `~/.local/share/gtk4-playground/tasks.json`. Task order and completion state
 are preserved.
