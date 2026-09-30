@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <object class="GtkWindow" id="articles_window">
+    <property name="title">Articles API</property>
+    <property name="default-width">680</property>
+    <property name="default-height">480</property>
+    <property name="hide-on-close">True</property>
+    <property name="resizable">True</property>
+    <child>
+      <object class="GtkStack" id="articles_stack">
+        <property name="transition-type">slide-left-right</property>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">list</property>
+            <property name="title">Articles</property>
+            <property name="child">
+              <object class="GtkBox" id="articles_list_view">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <property name="margin-bottom">16</property>
+                <property name="margin-end">16</property>
+                <property name="margin-start">16</property>
+                <property name="margin-top">16</property>
+                <child>
+                  <object class="GtkLabel" id="articles_status">
+                    <property name="xalign">0</property>
+                    <property name="wrap">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="paged_list_box_slot">
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="orientation">vertical</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">detail</property>
+            <property name="title">Article</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="article_detail_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <property name="vscrollbar-policy">automatic</property>
+                <child>
+                  <object class="GtkBox" id="article_detail_view">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">10</property>
+                    <property name="margin-bottom">16</property>
+                    <property name="margin-end">16</property>
+                    <property name="margin-start">16</property>
+                    <property name="margin-top">16</property>
+                    <child>
+                      <object class="GtkButton" id="article_back_button">
+                        <property name="label">← Back to articles</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="article_detail_status">
+                        <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkPicture" id="article_detail_picture">
+                        <property name="alternative-text">Article image</property>
+                        <property name="can-shrink">True</property>
+                        <property name="content-fit">contain</property>
+                        <property name="halign">start</property>
+                        <property name="height-request">220</property>
+                        <property name="width-request">360</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="article_detail_title">
+                        <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="scale" value="1.4"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="article_detail_date">
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="article_detail_description">
+                        <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Comments</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBox" id="article_comments">
+                        <property name="selection-mode">none</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

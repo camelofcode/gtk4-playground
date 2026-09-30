@@ -1,7 +1,7 @@
 #ifndef FILE_SYSTEM_LOADER_H
 #define FILE_SYSTEM_LOADER_H
 
-#include "file_system_node.h"
+#include "models/file_system_node.h"
 
 G_BEGIN_DECLS
 

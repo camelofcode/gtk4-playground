@@ -94,9 +94,11 @@ void file_system_node_add_child(
     g_return_if_fail(FILE_SYSTEM_IS_NODE(child));
     g_return_if_fail(self->directory);
 
-    self->file_count += file_system_node_is_directory(child)
-        ? file_system_node_get_file_count(child)
-        : 1;
+    if (file_system_node_is_directory(child)) {
+        self->file_count += file_system_node_get_file_count(child);
+    } else {
+        self->file_count++;
+    }
     g_ptr_array_add(self->children, g_object_ref(child));
 }
 

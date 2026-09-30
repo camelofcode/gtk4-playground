@@ -3,9 +3,16 @@
 
 #include <json-glib/json-glib.h>
 
-/* Parses NUL-terminated JSON. Returns an owned root, or NULL with error.
+/* Parses JSON data. Returns an owned root, or NULL with error.
  * Free the result with json_node_unref() or g_autoptr(JsonNode).
  */
+JsonNode *json_helpers_from_data(
+    const gchar *contents,
+    gssize length,
+    GError **error
+);
+
+/* Parses NUL-terminated JSON. */
 JsonNode *json_helpers_from_string(
     const gchar *contents,
     GError **error

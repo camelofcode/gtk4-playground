@@ -5,7 +5,7 @@
 
 G_BEGIN_DECLS
 
-#define TASK_TYPE_ITEM task_get_type()
+#define TASK_TYPE_ITEM (task_get_type())
 
 G_DECLARE_FINAL_TYPE(
     Task,

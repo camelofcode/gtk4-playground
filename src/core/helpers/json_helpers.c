@@ -1,17 +1,33 @@
 #include "json_helpers.h"
 
-JsonNode *json_helpers_from_string(const gchar *contents, GError **error) {
+JsonNode *json_helpers_from_data(
+    const gchar *contents,
+    gssize length,
+    GError **error
+) {
+    g_return_val_if_fail(contents != NULL, NULL);
+
     g_autoptr(JsonParser) parser = json_parser_new();
-    if (!json_parser_load_from_data(parser, contents, -1, error)) {
+    if (!json_parser_load_from_data(parser, contents, length, error)) {
         return NULL;
     }
     JsonNode *root = json_parser_steal_root(parser);
     if (!root) {
         g_set_error_literal(
-            error, G_IO_ERROR, G_IO_ERROR_INVALID_DATA, "Expected a JSON value."
+            error,
+            G_IO_ERROR,
+            G_IO_ERROR_INVALID_DATA,
+            "Expected a JSON value."
         );
     }
     return root;
+}
+
+JsonNode *json_helpers_from_string(
+    const gchar *contents,
+    GError **error
+) {
+    return json_helpers_from_data(contents, -1, error);
 }
 
 gboolean json_helpers_member_has_type(
@@ -32,14 +48,18 @@ GListStore *json_helpers_deserialize_list(
     if (!g_type_is_a(item_type, G_TYPE_OBJECT) ||
         G_TYPE_IS_ABSTRACT(item_type)) {
         g_set_error_literal(
-            error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+            error,
+            G_IO_ERROR,
+            G_IO_ERROR_INVALID_ARGUMENT,
             "Expected a concrete GObject type."
         );
         return NULL;
     }
     if (!node || !JSON_NODE_HOLDS_ARRAY(node)) {
         g_set_error_literal(
-            error, G_IO_ERROR, G_IO_ERROR_INVALID_DATA,
+            error,
+            G_IO_ERROR,
+            G_IO_ERROR_INVALID_DATA,
             "Expected a JSON array of objects."
         );
         return NULL;
@@ -50,16 +70,23 @@ GListStore *json_helpers_deserialize_list(
         JsonNode *element = json_array_get_element(array, i);
         if (!JSON_NODE_HOLDS_OBJECT(element)) {
             g_set_error(
-                error, G_IO_ERROR, G_IO_ERROR_INVALID_DATA,
-                "Expected a JSON object at index %u.", i
+                error,
+                G_IO_ERROR,
+                G_IO_ERROR_INVALID_DATA,
+                "Expected a JSON object at index %u.",
+                i
             );
             return NULL;
         }
         g_autoptr(GObject) item = json_gobject_deserialize(item_type, element);
         if (!item) {
             g_set_error(
-                error, G_IO_ERROR, G_IO_ERROR_INVALID_DATA,
-                "Could not deserialize %s at index %u.", g_type_name(item_type), i
+                error,
+                G_IO_ERROR,
+                G_IO_ERROR_INVALID_DATA,
+                "Could not deserialize %s at index %u.",
+                g_type_name(item_type),
+                i
             );
             return NULL;
         }
@@ -137,9 +164,7 @@ void json_helpers_write_null_member(
     json_builder_add_null_value(builder);
 }
 
-gchar *json_helpers_to_string(
-    JsonBuilder *builder
-) {
+gchar *json_helpers_to_string(JsonBuilder *builder) {
     g_autoptr(JsonNode) root = json_builder_get_root(builder);
     g_autoptr(JsonGenerator) generator = json_generator_new();
     json_generator_set_root(generator, root);

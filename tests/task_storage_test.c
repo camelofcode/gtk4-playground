@@ -1,4 +1,4 @@
-#include "src/core/task.h"
+#include "src/core/models/task.h"
 #include "src/core/task_storage.h"
 #include <glib/gstdio.h>
 
@@ -19,7 +19,11 @@ static void round_trip(void) {
     g_assert_no_error(error);
     g_autoptr(GListStore) loaded = task_storage_load(&error);
     g_assert_no_error(error);
-    g_assert_cmpuint(g_list_model_get_n_items(G_LIST_MODEL(loaded)), ==, G_N_ELEMENTS(texts));
+    g_assert_cmpuint(
+        g_list_model_get_n_items(G_LIST_MODEL(loaded)),
+        ==,
+        G_N_ELEMENTS(texts)
+    );
     for (guint i = 0; i < G_N_ELEMENTS(texts); i++) {
         g_autoptr(Task) task = g_list_model_get_item(G_LIST_MODEL(loaded), i);
         g_assert_cmpstr(task_get_text(task), ==, texts[i]);
@@ -37,9 +41,8 @@ static void round_trip(void) {
 
 static void explicit_properties(void) {
     g_autoptr(GError) error = NULL;
-    const gchar *json =
-        "[{\"text\":\"Existing\",\"done\":true},"
-        "{\"text\":\"\",\"done\":false},{\"unknown\":42}]";
+    const gchar *json = "[{\"text\":\"Existing\",\"done\":true},"
+                        "{\"text\":\"\",\"done\":false},{\"unknown\":42}]";
     g_assert_true(g_file_set_contents(path, json, -1, &error));
     g_assert_no_error(error);
     g_autoptr(GListStore) tasks = task_storage_load(&error);
@@ -55,8 +58,7 @@ static void explicit_properties(void) {
 
 static void property_defaults(void) {
     g_autoptr(GError) error = NULL;
-    const gchar *json =
-        "[{\"text\":null},{}]";
+    const gchar *json = "[{\"text\":null},{}]";
     g_assert_true(g_file_set_contents(path, json, -1, &error));
     g_assert_no_error(error);
     g_autoptr(GListStore) tasks = task_storage_load(&error);
@@ -114,7 +116,8 @@ int main(
     char **argv
 ) {
     /* Set once before GLib caches the user data directory. */
-    g_autofree gchar *directory = g_dir_make_tmp("gtk4-storage-test-XXXXXX", NULL);
+    g_autofree gchar *directory =
+        g_dir_make_tmp("gtk4-storage-test-XXXXXX", NULL);
     g_assert_nonnull(directory);
     g_setenv("XDG_DATA_HOME", directory, TRUE);
     g_test_init(&argc, &argv, NULL);

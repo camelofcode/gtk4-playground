@@ -1,7 +1,7 @@
 #ifndef FILE_TREE_MODEL_H
 #define FILE_TREE_MODEL_H
 
-#include "src/core/file_system_node.h"
+#include "src/core/models/file_system_node.h"
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS

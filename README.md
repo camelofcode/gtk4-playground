@@ -11,7 +11,9 @@ Small C/GTK 4 examples, built with Meson and Ninja.
 ├── design/                     # Cambalache project (.cmb)
 ├── src/
 │   ├── main.c                  # Application startup and UI loading
-│   ├── core/                   # Task model and JSON persistence
+│   ├── core/                   # Models, API client, and JSON persistence
+│   │   ├── models/             # One GObject model per .c/.h pair
+│   │   └── helpers/            # Reusable helpers grouped by responsibility
 │   └── ui/
 │       ├── windows/            # Window behaviour and signal connections
 │       ├── widgets/            # Reusable widget implementations
@@ -21,7 +23,7 @@ Small C/GTK 4 examples, built with Meson and Ninja.
 │   ├── windows/                # One .ui layout per window
 │   ├── widgets/                # Reusable .ui widget templates
 │   └── sass/                   # SCSS entry point and style partials
-├── tests/                      # Storage and window integration tests
+├── tests/                      # Model, storage, and window integration tests
 └── builddir/                   # Generated build output (not committed)
 ```
 
@@ -34,12 +36,13 @@ model and persistence code lives in `src/core/`.
 ## Dependencies
 
 You need a C17 compiler, Meson, Ninja, pkg-config, GTK 4.10 or newer,
-JSON-GLib 1.6 or newer (including development headers), and a Sass compiler.
+JSON-GLib 1.6 or newer, libsoup 3, and a Sass compiler. Development headers
+are needed for each library.
 
 On Fedora:
 
 ```sh
-sudo dnf install gcc meson ninja-build pkgconf-pkg-config gtk4-devel json-glib-devel sassc
+sudo dnf install gcc meson ninja-build pkgconf-pkg-config gtk4-devel json-glib-devel libsoup3-devel sassc
 ```
 
 If the existing project already builds, the Sass dependency alone is:
@@ -66,11 +69,11 @@ Sass), falling back to `sassc`. After changing compilers, run
 ## UI layouts
 
 `ui/windows/` contains one GtkBuilder file per window. The application loads
-all three into the same builder before connecting behaviour in C.
+all window layouts into the same builder before connecting behaviour in C.
 `ui/widgets/task-row.ui` contains the reusable task-row widget template.
 `resources.gresource.xml` at the project root lists the embedded assets.
 
-Open the `.cmb` project in `design/` to edit all four layouts in Cambalache.
+Open the `.cmb` project in `design/` to edit the layouts in Cambalache.
 Its file paths are relative to the design project. Reload the project if it
 was already open when the layouts were reorganized.
 
@@ -125,7 +128,7 @@ without a display.
 
 ## Task data
 
-`src/core/task.c` implements a GTK-independent Task GObject with `text` and
+`src/core/models/task.c` implements a GTK-independent Task GObject with `text` and
 `done` properties. A GListStore holds the tasks; the task window binds that
 collection to rows, which observe and update their Task objects.
 
@@ -146,3 +149,31 @@ original file. Repair or move that file and restart to resume editing. A failed
 save when closing either window shows an error and cancels closing so you can
 retry. The shutdown fallback logs failures if the windows have already been
 destroyed. GTK 4 uses asynchronous alert dialogs and close-request handlers.
+
+## Articles API example
+
+The **Articles API** window demonstrates a paginated REST client for the
+example Articles API. It fetches each page asynchronously, shows summaries,
+and opens article details and comments in a second view in the same window.
+The previous/next controls use the server's `totalPages`, so paging is not
+limited to a fixed number of pages. The current list page remains in place
+while viewing an article.
+
+The API client uses libsoup 3 and JSON-GLib. The default API base URL comes
+from the OpenAPI example (`http://media:8090`). Override it at runtime with
+`ARTICLES_API_BASE_URL`, for example:
+
+```sh
+ARTICLES_API_BASE_URL=http://localhost:8090 ./builddir/gtk4-playground
+```
+
+The client expects `GET /api/articles?page=N` and
+`GET /api/articles/{id}`. Article summary, detail, page, and comment values
+are GObjects in `src/core/models/`; each model has its own `.c` and `.h`
+file. A detail owns a `GListModel` of comment objects. JSON-GLib deserializes
+the model properties, while the shared JSON helpers convert JSON arrays into
+`GListStore` collections. Helpers in `src/core/helpers/` are grouped by the
+responsibility they serve rather than by the feature that first uses them.
+Image URLs are fetched asynchronously and decoded as `GdkTexture` objects.
+GTK 4 `GtkPicture` widgets display those textures with contained aspect-ratio
+scaling.

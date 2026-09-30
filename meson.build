@@ -11,6 +11,7 @@ project(
 gtk = dependency('gtk4', version: '>=4.10')
 
 json_glib = dependency('json-glib-1.0', version: '>=1.6')
+soup = dependency('libsoup-3.0', version: '>=3.0')
 
 gnome = import('gnome')
 
@@ -39,11 +40,18 @@ resources = gnome.compile_resources(
 
 sources = files(
   'src/main.c',
-  'src/core/task.c',
+  'src/core/models/task.c',
+  'src/core/models/article_summary.c',
+  'src/core/models/article_detail.c',
+  'src/core/models/article_comment.c',
+  'src/core/models/api_page.c',
+  'src/core/articles_api.c',
   'src/core/task_storage.c',
+  'src/core/helpers/date_helpers.c',
+  'src/core/helpers/gobject_helpers.c',
   'src/core/helpers/json_helpers.c',
   'src/core/helpers/file_helpers.c',
-  'src/core/file_system_node.c',
+  'src/core/models/file_system_node.c',
   'src/core/file_system_loader.c',
   'src/ui/models/file_tree_model.c',
   'src/ui/widgets/file_tree_view.c',
@@ -51,22 +59,27 @@ sources = files(
   'src/ui/windows/text_binding_window.c',
   'src/ui/windows/task_list_window.c',
   'src/ui/windows/file_tree_window.c',
+  'src/ui/windows/articles_window.c',
   'src/ui/error_dialog.c',
   'src/ui/gtk_helpers.c',
   'src/ui/widgets/task_row.c',
+  'src/ui/widgets/article_picture.c',
+  'src/ui/widgets/article_summary_row.c',
+  'src/ui/widgets/article_comment_row.c',
+  'src/ui/widgets/paged_list_box.c',
 )
 
 executable(
   'gtk4-playground',
   sources,
   resources,
-  dependencies: [gtk, json_glib],
+  dependencies: [gtk, json_glib, soup],
 )
 
 storage_test = executable(
   'task-storage-test',
   'tests/task_storage_test.c',
-  'src/core/task.c',
+  'src/core/models/task.c',
   'src/core/task_storage.c',
   'src/core/helpers/json_helpers.c',
   'src/core/helpers/file_helpers.c',
@@ -75,10 +88,45 @@ storage_test = executable(
 )
 test('task-storage', storage_test)
 
+article_models_test = executable(
+  'article-models-test',
+  'tests/article_models_test.c',
+  'src/core/helpers/date_helpers.c',
+  'src/core/helpers/gobject_helpers.c',
+  'src/core/helpers/json_helpers.c',
+  'src/core/models/article_summary.c',
+  'src/core/models/article_detail.c',
+  'src/core/models/article_comment.c',
+  'src/core/models/api_page.c',
+  include_directories: include_directories('.'),
+  dependencies: json_glib,
+)
+test('article-models', article_models_test)
+
+articles_api_test = executable(
+  'articles-api-test',
+  'tests/articles_api_test.c',
+  'src/core/articles_api.c',
+  'src/core/helpers/gobject_helpers.c',
+  'src/core/helpers/json_helpers.c',
+  'src/core/models/article_summary.c',
+  'src/core/models/article_detail.c',
+  'src/core/models/article_comment.c',
+  'src/core/models/api_page.c',
+  include_directories: include_directories('.'),
+  dependencies: [gtk, json_glib, soup],
+)
+test(
+  'articles-api',
+  articles_api_test,
+  env: ['G_DEBUG=fatal-warnings'],
+  timeout: 10,
+)
+
 file_system_loader_test = executable(
   'file-system-loader-test',
   'tests/file_system_loader_test.c',
-  'src/core/file_system_node.c',
+  'src/core/models/file_system_node.c',
   'src/core/file_system_loader.c',
   include_directories: include_directories('.'),
   dependencies: gtk,
@@ -88,7 +136,7 @@ test('file-system-loader', file_system_loader_test)
 file_tree_view_test = executable(
   'file-tree-view-test',
   'tests/file_tree_view_test.c',
-  'src/core/file_system_node.c',
+  'src/core/models/file_system_node.c',
   'src/core/file_system_loader.c',
   'src/ui/models/file_tree_model.c',
   'src/ui/widgets/file_tree_view.c',
@@ -99,27 +147,54 @@ file_tree_view_test = executable(
 # Requires a display; skipped automatically when one is unavailable.
 test('file-tree-view', file_tree_view_test, env: ['G_DEBUG=fatal-warnings'])
 
+paged_list_box_test = executable(
+  'paged-list-box-test',
+  'tests/paged_list_box_test.c',
+  'src/ui/widgets/paged_list_box.c',
+  resources,
+  include_directories: include_directories('.'),
+  dependencies: gtk,
+)
+# Requires a display; skipped automatically when one is unavailable.
+test(
+  'paged-list-box',
+  paged_list_box_test,
+  env: ['G_DEBUG=fatal-warnings'],
+)
+
 window_test = executable(
   'task-window-test',
   'tests/task_window_test.c',
-  'src/core/task.c',
+  'src/core/models/task.c',
   'src/core/task_storage.c',
+  'src/core/helpers/date_helpers.c',
   'src/core/helpers/json_helpers.c',
   'src/core/helpers/file_helpers.c',
-  'src/core/file_system_node.c',
+  'src/core/models/file_system_node.c',
   'src/core/file_system_loader.c',
+  'src/core/helpers/gobject_helpers.c',
+  'src/core/models/article_summary.c',
+  'src/core/models/article_detail.c',
+  'src/core/models/article_comment.c',
+  'src/core/models/api_page.c',
+  'src/core/articles_api.c',
   'src/ui/models/file_tree_model.c',
   'src/ui/widgets/file_tree_view.c',
   'src/ui/widgets/task_row.c',
+  'src/ui/widgets/article_picture.c',
+  'src/ui/widgets/article_summary_row.c',
+  'src/ui/widgets/article_comment_row.c',
+  'src/ui/widgets/paged_list_box.c',
   'src/ui/windows/task_list_window.c',
   'src/ui/error_dialog.c',
   'src/ui/gtk_helpers.c',
   'src/ui/windows/main_window.c',
   'src/ui/windows/text_binding_window.c',
   'src/ui/windows/file_tree_window.c',
+  'src/ui/windows/articles_window.c',
   resources,
   include_directories: include_directories('.'),
-  dependencies: [gtk, json_glib],
+  dependencies: [gtk, json_glib, soup],
 )
 # Requires a display; skipped automatically when one is unavailable.
 test('task-window', window_test, env: ['G_DEBUG=fatal-warnings'])

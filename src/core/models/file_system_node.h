@@ -5,7 +5,7 @@
 
 G_BEGIN_DECLS
 
-#define FILE_SYSTEM_TYPE_NODE file_system_node_get_type()
+#define FILE_SYSTEM_TYPE_NODE (file_system_node_get_type())
 
 G_DECLARE_FINAL_TYPE(
     FileSystemNode,

@@ -1,7 +1,7 @@
 #ifndef TASK_ROW_H
 #define TASK_ROW_H
 
-#include "src/core/task.h"
+#include "src/core/models/task.h"
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS

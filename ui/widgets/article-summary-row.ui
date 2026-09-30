@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <template class="ArticleSummaryRow" parent="GtkListBoxRow">
+    <property name="activatable">False</property>
+    <property name="selectable">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="spacing">14</property>
+        <property name="margin-bottom">8</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">8</property>
+        <child>
+          <object class="GtkPicture" id="picture">
+            <property name="alternative-text">Article image</property>
+            <property name="can-shrink">True</property>
+            <property name="content-fit">contain</property>
+            <property name="height-request">80</property>
+            <property name="valign">center</property>
+            <property name="width-request">128</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="hexpand">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">4</property>
+            <property name="valign">center</property>
+            <child>
+              <object class="GtkLabel" id="title">
+                <property name="xalign">0</property>
+                <property name="wrap">True</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                </attributes>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="date">
+                <property name="xalign">0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="open_button">
+            <property name="label">Open details</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.10"/>
+  <template class="PagedListBox" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="spacing">8</property>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="min-content-height">160</property>
+        <child>
+          <object class="GtkListBox" id="list">
+            <property name="selection-mode">none</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="spacing">12</property>
+        <property name="halign">center</property>
+        <child>
+          <object class="GtkButton" id="previous_button">
+            <property name="label">Previous</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="page_label">
+            <property name="label">Page 1 of 1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="next_button">
+            <property name="label">Next</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

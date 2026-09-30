@@ -28,6 +28,11 @@
             <property name="label">File Tree</property>
           </object>
         </child>
+        <child>
+          <object class="GtkButton" id="open_articles_window_button">
+            <property name="label">Articles API</property>
+          </object>
+        </child>
       </object>
     </child>
   </object>

@@ -1,7 +1,7 @@
 #include "task_storage.h"
 #include "helpers/file_helpers.h"
 #include "helpers/json_helpers.h"
-#include "task.h"
+#include "models/task.h"
 
 static gchar *task_storage_default_path(void) {
     return g_build_filename(
@@ -12,9 +12,7 @@ static gchar *task_storage_default_path(void) {
     );
 }
 
-GListStore *task_storage_load(
-    GError **error
-) {
+GListStore *task_storage_load(GError **error) {
     g_autofree gchar *path = task_storage_default_path();
     g_autoptr(GError) local_error = NULL;
     g_autofree gchar *contents = file_helpers_read_all_text(path, &local_error);

@@ -18,6 +18,7 @@ G_DEFINE_TYPE(
     task,
     G_TYPE_OBJECT
 )
+
 static GParamSpec *properties[N_PROPERTIES];
 
 static void task_get_property(
