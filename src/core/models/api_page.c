@@ -117,6 +117,21 @@ ApiPage *api_page_from_json(
     return api_page_new(current_page, total_pages, G_LIST_MODEL(items));
 }
 
+GObject *api_page_deserialize_response(
+    GBytes *response_body,
+    GType item_type,
+    GError **error
+) {
+    g_return_val_if_fail(response_body != NULL, NULL);
+
+    gsize response_length = 0;
+    gconstpointer response_data =
+        g_bytes_get_data(response_body, &response_length);
+    return G_OBJECT(
+        api_page_from_json(response_data, response_length, item_type, error)
+    );
+}
+
 guint api_page_get_current_page(ApiPage *self) {
     g_return_val_if_fail(API_IS_PAGE(self), 0);
     return self->current_page;

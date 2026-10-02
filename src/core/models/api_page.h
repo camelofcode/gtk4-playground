@@ -28,6 +28,13 @@ ApiPage *api_page_from_json(
     GError **error
 );
 
+/* Deserializes a REST response whose items use item_type. */
+GObject *api_page_deserialize_response(
+    GBytes *response_body,
+    GType item_type,
+    GError **error
+);
+
 guint api_page_get_current_page(ApiPage *self);
 guint api_page_get_total_pages(ApiPage *self);
 GListModel *api_page_get_items(ApiPage *self);

@@ -7,18 +7,24 @@
 #include "src/core/models/article_comment.h"
 #include "src/core/models/article_detail.h"
 #include "src/core/models/article_summary.h"
+#include <string.h>
 
 static void test_api_page_deserialization(void) {
     const gchar *json = "{\"currentPage\":1,\"totalPages\":2,\"items\":["
                         "{\"id\":\"article-id\",\"name\":\"Example\","
                         "\"image\":\"https://example.com/image.jpg\","
                         "\"date\":\"2026-09-29T12:00:00Z\"}]}";
+    g_autoptr(GBytes) response_body = g_bytes_new_static(json, strlen(json));
     g_autoptr(GError) error = NULL;
-    g_autoptr(ApiPage) page =
-        api_page_from_json(json, -1, ARTICLE_TYPE_SUMMARY, &error);
+    g_autoptr(GObject) response = api_page_deserialize_response(
+        response_body,
+        ARTICLE_TYPE_SUMMARY,
+        &error
+    );
 
     g_assert_no_error(error);
-    g_assert_nonnull(page);
+    g_assert_true(API_IS_PAGE(response));
+    ApiPage *page = API_PAGE(response);
     g_assert_cmpuint(api_page_get_current_page(page), ==, 1);
     g_assert_cmpuint(api_page_get_total_pages(page), ==, 2);
 

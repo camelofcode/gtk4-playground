@@ -17,42 +17,54 @@ G_DECLARE_FINAL_TYPE(
     GObject
 )
 
+/* response and error are borrowed for the duration of the callback.
+ * Exactly one of them is non-NULL.
+ */
+typedef void (*ArticlesApiListCallback)(
+    ArticlesApi *self,
+    ApiPage *response,
+    const GError *error,
+    gpointer user_data
+);
+
+typedef void (*ArticlesApiDetailCallback)(
+    ArticlesApi *self,
+    ArticleDetail *response,
+    const GError *error,
+    gpointer user_data
+);
+
+typedef void (*ArticlesApiImageCallback)(
+    ArticlesApi *self,
+    GdkTexture *response,
+    const GError *error,
+    gpointer user_data
+);
+
 ArticlesApi *articles_api_new(const gchar *base_url);
+
 void articles_api_list_async(
     ArticlesApi *self,
     guint page,
     GCancellable *cancellable,
-    GAsyncReadyCallback callback,
+    ArticlesApiListCallback callback,
     gpointer user_data
 );
-ApiPage *articles_api_list_finish(
-    ArticlesApi *self,
-    GAsyncResult *result,
-    GError **error
-);
+
 void articles_api_get_async(
     ArticlesApi *self,
     const gchar *article_id,
     GCancellable *cancellable,
-    GAsyncReadyCallback callback,
+    ArticlesApiDetailCallback callback,
     gpointer user_data
 );
-ArticleDetail *articles_api_get_finish(
-    ArticlesApi *self,
-    GAsyncResult *result,
-    GError **error
-);
+
 void articles_api_download_image_async(
     ArticlesApi *self,
     const gchar *url,
     GCancellable *cancellable,
-    GAsyncReadyCallback callback,
+    ArticlesApiImageCallback callback,
     gpointer user_data
-);
-GdkTexture *articles_api_download_image_finish(
-    ArticlesApi *self,
-    GAsyncResult *result,
-    GError **error
 );
 
 G_END_DECLS

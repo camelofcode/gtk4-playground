@@ -5,7 +5,7 @@
 #include "src/ui/widgets/article_comment_row.h"
 #include "src/ui/widgets/article_summary_row.h"
 #include "src/ui/widgets/task_row.h"
-#include "src/ui/windows/articles_window.h"
+#include "src/ui/windows/articles_window/articles_window.h"
 #include "src/ui/windows/file_tree_window.h"
 #include "src/ui/windows/main_window.h"
 #include "src/ui/windows/task_list_window.h"
