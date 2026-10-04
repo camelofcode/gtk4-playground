@@ -138,7 +138,7 @@ void articles_api_list_async(
     ArticlesApiRequest *request =
         articles_api_request_new(self, ARTICLES_API_RESPONSE_PAGE, user_data);
     request->callback.list = callback;
-    rest_get_with_deserializer_async(
+    rest_get_with_response_deserializer_async(
         self->session,
         url,
         ARTICLE_TYPE_SUMMARY,
@@ -165,7 +165,7 @@ void articles_api_get_async(
     ArticlesApiRequest *request =
         articles_api_request_new(self, ARTICLES_API_RESPONSE_DETAIL, user_data);
     request->callback.detail = callback;
-    rest_get_json_async(
+    rest_get_async(
         self->session,
         url,
         ARTICLE_TYPE_DETAIL,
@@ -187,7 +187,7 @@ void articles_api_download_image_async(
     ArticlesApiRequest *request =
         articles_api_request_new(self, ARTICLES_API_RESPONSE_IMAGE, user_data);
     request->callback.image = callback;
-    rest_get_with_deserializer_async(
+    rest_get_with_response_deserializer_async(
         self->session,
         url,
         GDK_TYPE_TEXTURE,

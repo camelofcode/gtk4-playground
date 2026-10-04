@@ -5,14 +5,13 @@
 
 typedef struct {
     SoupMessage *message;
-    GType response_object_type;
-    GType deserializer_type;
+    GType deserialization_type;
     RestResponseDeserializer response_deserializer;
     RestResponseAsyncCallback callback;
     gpointer user_data;
-} RestRequest;
+} RestResponseHandler;
 
-static void rest_request_free(RestRequest *request) {
+static void rest_response_handler_free(RestResponseHandler *request) {
     g_clear_object(&request->message);
     g_free(request);
 }
@@ -25,15 +24,15 @@ static void dispatch_response(
     (void)user_data;
 
     GTask *task = G_TASK(result);
-    RestRequest *request = g_task_get_task_data(task);
+    RestResponseHandler *response_handler = g_task_get_task_data(task);
     g_autoptr(GError) error = NULL;
     g_autoptr(GObject) response_object = g_task_propagate_pointer(task, &error);
 
-    request->callback(
+    response_handler->callback(
         SOUP_SESSION(source_object),
         response_object,
         error,
-        request->user_data
+        response_handler->user_data
     );
 }
 
@@ -43,7 +42,7 @@ static void parse_response(
     gpointer user_data
 ) {
     GTask *task = G_TASK(user_data);
-    RestRequest *request = g_task_get_task_data(task);
+    RestResponseHandler *response_handler = g_task_get_task_data(task);
     g_autoptr(GError) error = NULL;
     g_autoptr(GBytes) response_body = soup_session_send_and_read_finish(
         SOUP_SESSION(source_object),
@@ -57,7 +56,7 @@ static void parse_response(
         return;
     }
 
-    guint status = soup_message_get_status(request->message);
+    guint status = soup_message_get_status(response_handler->message);
     if (!SOUP_STATUS_IS_SUCCESSFUL(status)) {
         g_task_return_new_error(
             task,
@@ -70,11 +69,17 @@ static void parse_response(
         return;
     }
 
+    if (response_handler->deserialization_type == G_TYPE_NONE) {
+        g_task_return_pointer(task, NULL, NULL);
+        g_object_unref(task);
+        return;
+    }
+
     GObject *response_object = NULL;
-    if (request->response_deserializer) {
-        response_object = request->response_deserializer(
+    if (response_handler->response_deserializer) {
+        response_object = response_handler->response_deserializer(
             response_body,
-            request->deserializer_type,
+            response_handler->deserialization_type,
             &error
         );
     } else {
@@ -82,7 +87,7 @@ static void parse_response(
         gconstpointer response_data =
             g_bytes_get_data(response_body, &response_length);
         response_object = json_gobject_from_data(
-            request->response_object_type,
+            response_handler->deserialization_type,
             response_data,
             response_length,
             &error
@@ -109,8 +114,7 @@ static gboolean validate_arguments(
     GTask *task,
     const gchar *url,
     const gchar *method,
-    GType response_object_type,
-    GType deserializer_type,
+    GType deserialization_type,
     RestResponseDeserializer response_deserializer
 ) {
     if (!url || !*url) {
@@ -131,19 +135,28 @@ static gboolean validate_arguments(
         );
         return FALSE;
     }
-    if (response_deserializer &&
-        !g_type_is_a(deserializer_type, G_TYPE_OBJECT)) {
+    if (deserialization_type == G_TYPE_NONE) {
+        if (response_deserializer) {
+            g_task_return_new_error(
+                task,
+                G_IO_ERROR,
+                G_IO_ERROR_INVALID_ARGUMENT,
+                "REST response deserializer requires a GObject type"
+            );
+            return FALSE;
+        }
+        return TRUE;
+    }
+    if (!g_type_is_a(deserialization_type, G_TYPE_OBJECT)) {
         g_task_return_new_error(
             task,
             G_IO_ERROR,
             G_IO_ERROR_INVALID_ARGUMENT,
-            "REST deserializer type must be a GObject type"
+            "REST deserialization type must be a GObject type"
         );
         return FALSE;
     }
-    if (!response_deserializer &&
-        (!g_type_is_a(response_object_type, G_TYPE_OBJECT) ||
-         G_TYPE_IS_ABSTRACT(response_object_type))) {
+    if (!response_deserializer && G_TYPE_IS_ABSTRACT(deserialization_type)) {
         g_task_return_new_error(
             task,
             G_IO_ERROR,
@@ -160,8 +173,7 @@ static void rest_send_async(
     const gchar *url,
     const gchar *method,
     GObject *request_object,
-    GType response_object_type,
-    GType deserializer_type,
+    GType deserialization_type,
     RestResponseDeserializer response_deserializer,
     GCancellable *cancellable,
     RestResponseAsyncCallback callback,
@@ -171,22 +183,24 @@ static void rest_send_async(
     g_return_if_fail(!cancellable || G_IS_CANCELLABLE(cancellable));
     g_return_if_fail(callback != NULL);
 
-    RestRequest *request = g_new0(RestRequest, 1);
-    request->response_object_type = response_object_type;
-    request->deserializer_type = deserializer_type;
+    RestResponseHandler *request = g_new0(RestResponseHandler, 1);
+    request->deserialization_type = deserialization_type;
     request->response_deserializer = response_deserializer;
     request->callback = callback;
     request->user_data = user_data;
 
     GTask *task = g_task_new(session, cancellable, dispatch_response, NULL);
-    g_task_set_task_data(task, request, (GDestroyNotify)rest_request_free);
+    g_task_set_task_data(
+        task,
+        request,
+        (GDestroyNotify)rest_response_handler_free
+    );
 
     if (!validate_arguments(
             task,
             url,
             method,
-            response_object_type,
-            deserializer_type,
+            deserialization_type,
             response_deserializer
         )) {
         g_object_unref(task);
@@ -229,31 +243,7 @@ static void rest_send_async(
     );
 }
 
-void rest_send_json_async(
-    SoupSession *session,
-    const gchar *url,
-    const gchar *method,
-    GObject *request_object,
-    GType response_object_type,
-    GCancellable *cancellable,
-    RestResponseAsyncCallback callback,
-    gpointer user_data
-) {
-    rest_send_async(
-        session,
-        url,
-        method,
-        request_object,
-        response_object_type,
-        G_TYPE_INVALID,
-        NULL,
-        cancellable,
-        callback,
-        user_data
-    );
-}
-
-void rest_get_json_async(
+void rest_get_async(
     SoupSession *session,
     const gchar *url,
     GType response_object_type,
@@ -267,7 +257,6 @@ void rest_get_json_async(
         "GET",
         NULL,
         response_object_type,
-        G_TYPE_INVALID,
         NULL,
         cancellable,
         callback,
@@ -275,7 +264,27 @@ void rest_get_json_async(
     );
 }
 
-void rest_get_with_deserializer_async(
+void rest_get_no_response_async(
+    SoupSession *session,
+    const gchar *url,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "GET",
+        NULL,
+        G_TYPE_NONE,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_get_with_response_deserializer_async(
     SoupSession *session,
     const gchar *url,
     GType deserializer_type,
@@ -289,7 +298,6 @@ void rest_get_with_deserializer_async(
         url,
         "GET",
         NULL,
-        G_TYPE_INVALID,
         deserializer_type,
         response_deserializer,
         cancellable,
@@ -298,7 +306,7 @@ void rest_get_with_deserializer_async(
     );
 }
 
-void rest_post_json_async(
+void rest_post_async(
     SoupSession *session,
     const gchar *url,
     GObject *request_object,
@@ -307,12 +315,252 @@ void rest_post_json_async(
     RestResponseAsyncCallback callback,
     gpointer user_data
 ) {
-    rest_send_json_async(
+    rest_send_async(
         session,
         url,
         "POST",
         request_object,
         response_object_type,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_post_no_response_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "POST",
+        request_object,
+        G_TYPE_NONE,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_post_with_response_deserializer_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GType deserializer_type,
+    RestResponseDeserializer response_deserializer,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "POST",
+        request_object,
+        deserializer_type,
+        response_deserializer,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_put_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GType response_object_type,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "PUT",
+        request_object,
+        response_object_type,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_put_no_response_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "PUT",
+        request_object,
+        G_TYPE_NONE,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_put_with_response_deserializer_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GType deserializer_type,
+    RestResponseDeserializer response_deserializer,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "PUT",
+        request_object,
+        deserializer_type,
+        response_deserializer,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_patch_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GType response_object_type,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "PATCH",
+        request_object,
+        response_object_type,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_patch_no_response_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "PATCH",
+        request_object,
+        G_TYPE_NONE,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_patch_with_response_deserializer_async(
+    SoupSession *session,
+    const gchar *url,
+    GObject *request_object,
+    GType deserializer_type,
+    RestResponseDeserializer response_deserializer,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "PATCH",
+        request_object,
+        deserializer_type,
+        response_deserializer,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_delete_async(
+    SoupSession *session,
+    const gchar *url,
+    GType response_object_type,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "DELETE",
+        NULL,
+        response_object_type,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_delete_no_response_async(
+    SoupSession *session,
+    const gchar *url,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "DELETE",
+        NULL,
+        G_TYPE_NONE,
+        NULL,
+        cancellable,
+        callback,
+        user_data
+    );
+}
+
+void rest_delete_with_response_deserializer_async(
+    SoupSession *session,
+    const gchar *url,
+    GType deserializer_type,
+    RestResponseDeserializer response_deserializer,
+    GCancellable *cancellable,
+    RestResponseAsyncCallback callback,
+    gpointer user_data
+) {
+    rest_send_async(
+        session,
+        url,
+        "DELETE",
+        NULL,
+        deserializer_type,
+        response_deserializer,
         cancellable,
         callback,
         user_data
