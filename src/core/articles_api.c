@@ -38,7 +38,7 @@ ArticlesApi *articles_api_new(const gchar *base_url) {
         base_url && *base_url
             ? base_url
             : (environment_url && *environment_url ? environment_url
-                                                   : "http://media:8090")
+                                                   : "https://wiremock.alta")
     );
     while (strlen(self->base_url) > 0 &&
            self->base_url[strlen(self->base_url) - 1] == '/') {
