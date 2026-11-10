@@ -2,6 +2,22 @@
 
 Small C/GTK 4 examples, built with Meson and Ninja.
 
+## Why this exists
+
+I built this repository as a learning exercise after moving my day-to-day
+development to Linux and wanting to understand GTK at its native C layer. The
+example applications are deliberately small: their purpose is to exercise
+architecture, lifecycle, data, networking, persistence, resources, and testing
+rather than to become useful end-user products.
+
+I am making the code public as an educational reference and as inspectable
+evidence of that learning. It aims to demonstrate clean, explicit patterns for
+structuring GTK and C code, including separation between declarative layout,
+UI behaviour, reusable widgets, and GTK-independent core logic. These are
+patterns I have found clear and maintainable, not a claim that they are the one
+official way to build a GTK application. Corrections and better alternatives
+are welcome.
+
 ## Project structure
 
 ```text
@@ -199,3 +215,7 @@ scaling.
 The fixture data is deliberately generic and the bundled placeholder artwork
 is original to this repository, so the complete example can be shared and run
 without depending on private services or third-party media.
+
+## Licence
+
+This learning project is available under the [MIT Licence](LICENSE).

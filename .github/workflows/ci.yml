@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and test
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install build and GTK dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            build-essential \
+            meson \
+            ninja-build \
+            pkg-config \
+            libgtk-4-dev \
+            libjson-glib-dev \
+            libsoup-3.0-dev \
+            sassc \
+            xauth \
+            xvfb
+
+      - name: Configure
+        run: meson setup builddir
+
+      - name: Compile
+        run: meson compile -C builddir
+
+      - name: Run complete test suite
+        run: xvfb-run --auto-servernum env G_DEBUG=fatal-warnings meson test -C builddir --print-errorlogs
