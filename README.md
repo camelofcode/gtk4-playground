@@ -1,5 +1,7 @@
 # GTK 4 playground
 
+[![CI](https://github.com/camelofcode/gtk4-playground/actions/workflows/ci.yml/badge.svg)](https://github.com/camelofcode/gtk4-playground/actions/workflows/ci.yml)
+
 Small C/GTK 4 examples, built with Meson and Ninja.
 
 ## Why this exists
