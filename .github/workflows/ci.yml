@@ -46,4 +46,7 @@ jobs:
         run: meson compile -C builddir
 
       - name: Run complete test suite
-        run: xvfb-run --auto-servernum env G_DEBUG=fatal-warnings meson test -C builddir --print-errorlogs
+        env:
+          G_DEBUG: fatal-warnings
+          GTK_A11Y: none
+        run: xvfb-run --auto-servernum meson test -C builddir --print-errorlogs
