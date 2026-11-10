@@ -161,12 +161,13 @@ while viewing an article.
 
 The API client uses libsoup 3 and JSON-GLib. A self-contained WireMock backend
 is included in `wiremock/`; its responses cover two list pages, article
-details, nested comments, and local image loading.
+details, nested comments, and local image loading. Running it requires Podman
+and `podman-compose`.
 
-Start it from the repository root with Docker Compose:
+Start it from the repository root with Podman Compose:
 
 ```sh
-docker compose -f wiremock/compose.yaml up --detach
+podman-compose -f wiremock/compose.yaml up --detach
 ```
 
 The application uses `http://localhost:8090` by default, so no additional
@@ -175,7 +176,7 @@ configuration is needed. The WireMock administration interface is available at
 remove the container with:
 
 ```sh
-docker compose -f wiremock/compose.yaml down
+podman-compose -f wiremock/compose.yaml down
 ```
 
 To use another compatible server, set `ARTICLES_API_BASE_URL`, for example:
