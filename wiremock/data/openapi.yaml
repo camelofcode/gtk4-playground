@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: GTK Playground Articles API
+  version: 1.0.0
+  description: A local paginated example API backed by WireMock.
+servers:
+  - url: http://localhost:8090
+    description: Local Docker Compose server
+paths:
+  /api/articles:
+    get:
+      operationId: listArticles
+      summary: List articles
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 2
+      responses:
+        "200":
+          description: A page of article summaries.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticlePage"
+  /api/articles/{id}:
+    get:
+      operationId: getArticle
+      summary: Get an article and its comments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: The requested article.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleDetail"
+        "404":
+          description: Article not found.
+components:
+  schemas:
+    ArticleSummary:
+      type: object
+      required: [id, name, image, date]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        image: { type: string, format: uri }
+        date: { type: string, format: date-time }
+    ArticlePage:
+      type: object
+      required: [currentPage, totalPages, items]
+      properties:
+        currentPage: { type: integer, minimum: 1 }
+        totalPages: { type: integer, minimum: 1 }
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleSummary"
+    ArticleDetail:
+      allOf:
+        - $ref: "#/components/schemas/ArticleSummary"
+        - type: object
+          required: [description, comments]
+          properties:
+            description: { type: string }
+            comments:
+              type: array
+              items:
+                $ref: "#/components/schemas/Comment"
+    Comment:
+      type: object
+      required: [user, date, text]
+      properties:
+        user: { type: string }
+        date: { type: string, format: date-time }
+        text: { type: string }

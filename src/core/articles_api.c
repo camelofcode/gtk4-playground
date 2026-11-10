@@ -38,7 +38,7 @@ ArticlesApi *articles_api_new(const gchar *base_url) {
         base_url && *base_url
             ? base_url
             : (environment_url && *environment_url ? environment_url
-                                                   : "https://wiremock.home.arpa")
+                                                   : "http://localhost:8090")
     );
     while (strlen(self->base_url) > 0 &&
            self->base_url[strlen(self->base_url) - 1] == '/') {

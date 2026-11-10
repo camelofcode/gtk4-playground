@@ -1,0 +1,18 @@
+{
+  "request": { "method": "GET", "urlPath": "/api/articles/66666666-6666-4666-8666-666666666666" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "66666666-6666-4666-8666-666666666666",
+      "name": "Testing desktop applications",
+      "image": "http://localhost:8090/__files/article-placeholder.png",
+      "date": "2026-10-01T12:00:00Z",
+      "description": "Core tests establish parsing and persistence behaviour while display-backed tests exercise resources, widgets, and lifecycle rules.",
+      "comments": [
+        { "user": "Harper Young", "date": "2026-10-01T14:00:00Z", "text": "The local API makes the complete flow repeatable." },
+        { "user": "Noah Ellis", "date": "2026-10-01T15:00:00Z", "text": "It is useful to see both headless and display-backed coverage." }
+      ]
+    }
+  }
+}

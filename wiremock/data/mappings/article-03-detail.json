@@ -1,0 +1,15 @@
+{
+  "request": { "method": "GET", "urlPath": "/api/articles/33333333-3333-4333-8333-333333333333" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "name": "JSON with JSON-GLib",
+      "image": "http://localhost:8090/__files/article-placeholder.png",
+      "date": "2026-10-04T12:00:00Z",
+      "description": "JSON-GLib can populate ordinary GObject properties directly while narrow adapters handle collection-shaped data.",
+      "comments": []
+    }
+  }
+}

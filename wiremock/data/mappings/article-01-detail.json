@@ -1,0 +1,18 @@
+{
+  "request": { "method": "GET", "urlPath": "/api/articles/11111111-1111-4111-8111-111111111111" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "name": "Structuring GTK applications",
+      "image": "http://localhost:8090/__files/article-placeholder.png",
+      "date": "2026-10-06T12:00:00Z",
+      "description": "Keep domain logic, reusable widgets, and window coordination in clear layers so each part remains understandable.",
+      "comments": [
+        { "user": "Morgan Reed", "date": "2026-10-06T14:00:00Z", "text": "The separation makes the example much easier to follow." },
+        { "user": "Priya Shah", "date": "2026-10-06T15:00:00Z", "text": "Small components also make focused tests practical." }
+      ]
+    }
+  }
+}

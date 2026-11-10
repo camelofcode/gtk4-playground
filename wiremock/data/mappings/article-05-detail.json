@@ -1,0 +1,17 @@
+{
+  "request": { "method": "GET", "urlPath": "/api/articles/55555555-5555-4555-8555-555555555555" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "55555555-5555-4555-8555-555555555555",
+      "name": "Reusable GTK widgets",
+      "image": "http://localhost:8090/__files/article-placeholder.png",
+      "date": "2026-10-02T12:00:00Z",
+      "description": "Rows, pagers, and image views become easier to reason about when each reusable component owns one clear responsibility.",
+      "comments": [
+        { "user": "Owen Price", "date": "2026-10-02T14:00:00Z", "text": "This also prevents windows from turning into large controller files." }
+      ]
+    }
+  }
+}

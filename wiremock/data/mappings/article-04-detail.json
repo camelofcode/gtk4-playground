@@ -1,0 +1,17 @@
+{
+  "request": { "method": "GET", "urlPath": "/api/articles/44444444-4444-4444-8444-444444444444" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "name": "Asynchronous HTTP with libsoup",
+      "image": "http://localhost:8090/__files/article-placeholder.png",
+      "date": "2026-10-03T12:00:00Z",
+      "description": "Asynchronous requests keep the GTK main loop responsive while cancellables make window and request lifecycles explicit.",
+      "comments": [
+        { "user": "Nina Clark", "date": "2026-10-03T14:00:00Z", "text": "Cancellation is easy to overlook in smaller examples." }
+      ]
+    }
+  }
+}

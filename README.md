@@ -159,9 +159,26 @@ The previous/next controls use the server's `totalPages`, so paging is not
 limited to a fixed number of pages. The current list page remains in place
 while viewing an article.
 
-The API client uses libsoup 3 and JSON-GLib. The default API base URL comes
-from the OpenAPI example (`http://media:8090`). Override it at runtime with
-`ARTICLES_API_BASE_URL`, for example:
+The API client uses libsoup 3 and JSON-GLib. A self-contained WireMock backend
+is included in `wiremock/`; its responses cover two list pages, article
+details, nested comments, and local image loading.
+
+Start it from the repository root with Docker Compose:
+
+```sh
+docker compose -f wiremock/compose.yaml up --detach
+```
+
+The application uses `http://localhost:8090` by default, so no additional
+configuration is needed. The WireMock administration interface is available at
+`http://localhost:8090/__admin/` while the container is running. Stop and
+remove the container with:
+
+```sh
+docker compose -f wiremock/compose.yaml down
+```
+
+To use another compatible server, set `ARTICLES_API_BASE_URL`, for example:
 
 ```sh
 ARTICLES_API_BASE_URL=http://localhost:8090 ./builddir/gtk4-playground
@@ -177,3 +194,7 @@ responsibility they serve rather than by the feature that first uses them.
 Image URLs are fetched asynchronously and decoded as `GdkTexture` objects.
 GTK 4 `GtkPicture` widgets display those textures with contained aspect-ratio
 scaling.
+
+The fixture data is deliberately generic and the bundled placeholder artwork
+is original to this repository, so the complete example can be shared and run
+without depending on private services or third-party media.

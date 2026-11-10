@@ -1,0 +1,17 @@
+{
+  "request": { "method": "GET", "urlPath": "/api/articles/22222222-2222-4222-8222-222222222222" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "name": "GtkBuilder and resource files",
+      "image": "http://localhost:8090/__files/article-placeholder.png",
+      "date": "2026-10-05T12:00:00Z",
+      "description": "Declarative UI files keep static layout out of C while GResources package layouts and styles with the application.",
+      "comments": [
+        { "user": "Elliot Brown", "date": "2026-10-05T14:00:00Z", "text": "The mirrored UI and source folders make ownership obvious." }
+      ]
+    }
+  }
+}

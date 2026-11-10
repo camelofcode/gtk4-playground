@@ -1,0 +1,13 @@
+services:
+  wiremock:
+    image: holomekc/wiremock-gui:latest
+    command:
+      - --port
+      - "8080"
+      - --max-request-journal
+      - "1000"
+      - --local-response-templating
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./data:/home/wiremock:ro
