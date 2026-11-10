@@ -1,6 +1,6 @@
 services:
   wiremock:
-    image: holomekc/wiremock-gui:latest
+    image: docker.io/holomekc/wiremock-gui:latest
     command:
       - --port
       - "8080"
